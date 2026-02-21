@@ -1,0 +1,43 @@
+chore:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - CHANGELOG.md
+              - .gitignore
+              - .prettierrc
+              - package.json
+              - bun.lock
+
+ci:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - .github/workflows/**/*
+
+documentation:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - README.md
+              - docs/**/*
+
+feature:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - src/**/*
+              - app/**/*
+
+test:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - test/**/*
+
+config:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - "*.config.*"
+              - tsconfig.json
+              - .env.example

@@ -1,0 +1,62 @@
+name: PR Build & Test
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    environment: ${{ github.base_ref }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "latest"
+
+      - name: Restore Bun Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # - name: Run lint
+      #   run: bun run lint
+
+      # - name: Run tests
+      #   run: bun test
+
+      - name: Build app (for validation)
+        run: bun run build
+        env:
+          CI: true
+
+      - name: Setup Node.js 25 for Semantic Release
+        uses: actions/setup-node@v6
+        with:
+          node-version: "25"
+
+      - name: Validate Semantic Release (Dry Run)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+          NPM_TOKEN: false
+          DEBUG: "semantic-release:*"
+        run: npx semantic-release --dry-run --branches=${{ github.head_ref }}
