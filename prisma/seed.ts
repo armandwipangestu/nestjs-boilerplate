@@ -1,9 +1,7 @@
-import { PrismaClient } from '../generated/prisma/client';
+import { PrismaClient, User, Post, RefreshToken } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
+import * as pg from 'pg';
 import { faker } from '@faker-js/faker';
-
-const { Pool } = pg;
 
 /**
  * Prisma v7 Database Seeder
@@ -13,7 +11,7 @@ const { Pool } = pg;
 
 async function main() {
   // Initialize PostgreSQL connection pool
-  const pool = new Pool({
+  const pool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
   });
 
@@ -33,7 +31,7 @@ async function main() {
 
     // Seed Users
     console.log('👥 Seeding users...');
-    const users = [];
+    const users: User[] = [];
 
     // Create 5 realistic users
     for (let i = 0; i < 5; i++) {
@@ -67,7 +65,7 @@ async function main() {
 
     // Seed Posts
     console.log('📝 Seeding posts...');
-    const posts = [];
+    const posts: Post[] = [];
 
     for (const user of users) {
       // Each user gets 2-5 posts
@@ -91,7 +89,7 @@ async function main() {
 
     // Seed Refresh Tokens
     console.log('🔑 Seeding refresh tokens...');
-    const refreshTokens = [];
+    const refreshTokens: RefreshToken[] = [];
 
     for (const user of users) {
       // Each user gets 1-3 refresh tokens
