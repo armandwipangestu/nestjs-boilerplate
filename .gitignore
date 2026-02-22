@@ -46,6 +46,7 @@ docker-data
 .env.local
 .env.postgres
 .env.postgres.local
+.env.app
 
 # temp directory
 .temp

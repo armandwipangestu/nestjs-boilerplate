@@ -99,6 +99,7 @@ export class CustomLoggerService implements LoggerService {
     this.logger.info(message, { trace, context });
   }
 
+  // NOTE: Only this must have trace
   error(message: string, trace?: string, context?: string) {
     this.logger.error(message, { trace, context });
   }

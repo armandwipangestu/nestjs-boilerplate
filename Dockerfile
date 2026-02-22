@@ -42,16 +42,20 @@ COPY --from=builder /app/yarn.lock* ./
 COPY --from=builder /app/pnpm-lock.yaml* ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
+COPY docker-entrypoint.sh ./
 
 # Remove dev dependencies (cleaner)
 RUN bun install --production --frozen-lockfile
 
-# Use non-root user for security
-RUN addgroup -S nestjs && adduser -S nestjs -G nestjs
-USER nestjs
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Expose port
 EXPOSE 3000
+
+# Entrypoint to run migrations/seeding
+ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # Start NestJS
 CMD ["bun", "run", "start:prod"]

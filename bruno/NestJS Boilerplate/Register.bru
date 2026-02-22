@@ -1,0 +1,38 @@
+meta {
+  name: Register
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "username": "{{username}}",
+    "password": "{{password}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const token = body?.accessToken;
+  
+  if (token) {
+    bru.setEnvVar("access_token", token);
+    console.log("access_token updated: ", token)
+  } else {
+    console.log("token not found in response: ", body)
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

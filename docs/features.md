@@ -1,0 +1,2 @@
+1. Create Config Service, the file is related about configuration of application for e.g., load environment variables
+2. Create JTI mechanism, so in the refresh token have an tokenId to query based on jwt decoded, so instead of loop through all refresh token to find the matching token which O(n), we can query based on tokenId which O(1).
