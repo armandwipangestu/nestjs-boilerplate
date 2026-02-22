@@ -11,11 +11,13 @@ import { AppConfigModule } from './config/app-config.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig]
-    }), 
-    PrismaModule, AuthModule, AppConfigModule
+      load: [appConfig],
+    }),
+    PrismaModule,
+    AuthModule,
+    AppConfigModule,
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class AppModule {}

@@ -1,4 +1,5 @@
-import { User } from "@prisma/client";
+import { User } from '@prisma/client';
+import { Request } from 'express';
 
 export type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'>;
 
@@ -13,4 +14,15 @@ export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
   user: AuthUser;
+}
+
+export interface RequestWithUser extends Request {
+  user: JwtPayload;
+}
+
+export interface RequestWithCookies extends Request {
+  cookies: {
+    refreshToken?: string;
+    [key: string]: string | undefined;
+  };
 }

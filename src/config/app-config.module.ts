@@ -4,9 +4,7 @@ import appConfig from './app.config';
 import { AppConfigService } from './app-config.service';
 
 @Module({
-  imports: [
-    ConfigModule.forFeature(appConfig),
-  ],
+  imports: [ConfigModule.forFeature(appConfig)],
   providers: [AppConfigService],
   exports: [AppConfigService],
 })
