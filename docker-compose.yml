@@ -12,8 +12,8 @@ services:
         condition: service_healthy
       redis-nestjs-boilerplate:
         condition: service_started
-    # volumes:
-    #   - ./docker-data/nestjs-boilerplate/logs:/app/logs
+    volumes:
+      - ./docker-data/nestjs-boilerplate/logs:/app/logs
     logging:
       driver: "json-file"
       options:

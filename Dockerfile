@@ -49,12 +49,7 @@ COPY docker-entrypoint.sh ./
 # Remove dev dependencies (cleaner)
 RUN bun install --production --frozen-lockfile
 
-# Use non-root user for security
-RUN addgroup -S nestjs && adduser -S nestjs -G nestjs
-RUN mkdir -p /app/logs && chown -R nestjs:nestjs /app/logs
 RUN chmod +x /app/docker-entrypoint.sh
-
-USER nestjs
 
 # Expose port
 EXPOSE 3000
