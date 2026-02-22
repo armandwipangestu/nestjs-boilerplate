@@ -1,7 +1,7 @@
 {
   "name": "nestjs-boilerplate",
   "version": "1.0.0",
-  "description": "",
+  "description": "The API description for the NestJS Boilerplate project",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -29,6 +29,7 @@
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.14",
+    "@nestjs/swagger": "^11.2.6",
     "@nestjs/throttler": "^6.5.0",
     "@prisma/client": "^7.4.1",
     "bcryptjs": "^3.0.3",
@@ -43,6 +44,7 @@
     "redis": "^5.11.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "swagger-ui-express": "^5.0.1",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

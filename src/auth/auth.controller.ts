@@ -10,7 +10,9 @@ import { LoginDto } from './dto/login.dto';
 import { plainToInstance } from 'class-transformer';
 import { AuthResponseDto, UserResponseDto } from './dto/auth-response.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
@@ -19,12 +21,18 @@ export class AuthController {
         private appConfig: AppConfigService,
     ) {}
 
+    @ApiOperation({ summary: 'Register a new user' })
+    @ApiResponse({ status: 201, description: 'User successfully registered', type: UserResponseDto })
+    @ApiResponse({ status: 400, description: 'User already exists' })
     @Post('register')
     async register(@Body() registerDto: RegisterDto): Promise<UserResponseDto> {
         const user = await this.authService.register(registerDto);
         return plainToInstance(UserResponseDto, user, { excludeExtraneousValues: true });
     }
 
+    @ApiOperation({ summary: 'Login and receive tokens' })
+    @ApiResponse({ status: 200, description: 'Successfully logged in', type: AuthResponseDto })
+    @ApiResponse({ status: 401, description: 'Invalid credentials' })
     @Post('login')
     @HttpCode(200)
     async login(
@@ -48,6 +56,10 @@ export class AuthController {
         }, { excludeExtraneousValues: true });
     }
 
+    @ApiOperation({ summary: 'Refresh access token using refresh token cookie' })
+    @ApiResponse({ status: 200, description: 'Token successfully refreshed' })
+    @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
+    @ApiCookieAuth('refreshToken')
     @Post('refresh')
     @HttpCode(200)
     async refresh(@Req() req: Request) {
@@ -59,6 +71,9 @@ export class AuthController {
         return this.authService.refreshAccessToken(refreshToken);
     }
 
+    @ApiOperation({ summary: 'Logout and clear session' })
+    @ApiResponse({ status: 200, description: 'Successfully logged out' })
+    @ApiBearerAuth()
     @Post('logout')
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
