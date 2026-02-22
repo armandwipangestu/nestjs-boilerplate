@@ -1,3 +1,20 @@
+## [1.1.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.0.0...v1.1.0-rc.1) (2026-02-22)
+
+### ✨ Features
+
+* **database:** add migration setup ([5400ad5](https://github.com/armandwipangestu/nestjs-boilerplate/commit/5400ad5b754ed8b99f3abf9b036bedf65685099c))
+* **database:** add seeding feature ([d877c6f](https://github.com/armandwipangestu/nestjs-boilerplate/commit/d877c6fd71e1f64a141bbf4016a0c1107ef3d4a5))
+
+### 🐛 Bug Fixes
+
+* **ci:** add database url dummy ([5dfad47](https://github.com/armandwipangestu/nestjs-boilerplate/commit/5dfad47104f4f4344783041a48835f4a1912cbe1))
+* **ci:** build error prisma generate ([6796148](https://github.com/armandwipangestu/nestjs-boilerplate/commit/6796148ac5205ee31dfdeba519ce3b627632ec0b))
+* **database:** seed typescript warning ([182c4f0](https://github.com/armandwipangestu/nestjs-boilerplate/commit/182c4f01b030b80bc04cd4e81fa395c8cf2dcf63))
+
+### 🧹 Chores
+
+* update seeder ([8433859](https://github.com/armandwipangestu/nestjs-boilerplate/commit/84338592f5e73b01d6bf327ced4a4ae61ff75296))
+
 ## 1.0.0 (2026-02-21)
 
 ### ✨ Features
