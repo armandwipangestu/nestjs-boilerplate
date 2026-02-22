@@ -1,0 +1,23 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/auth/refresh
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
