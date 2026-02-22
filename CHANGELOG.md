@@ -1,3 +1,13 @@
+## [1.1.0-rc.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2026-02-22)
+
+### ✨ Features
+
+* **logging:** add custom logger module ([ae57f5c](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ae57f5cc4f9e65e7dcb4e89f3e2b5f3ba696b243))
+
+### 🐛 Bug Fixes
+
+* **ci:** lint ([872149d](https://github.com/armandwipangestu/nestjs-boilerplate/commit/872149d292df17571a8a79ac6b626a19e38ae146))
+
 ## [1.1.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.0.0...v1.1.0-rc.1) (2026-02-22)
 
 ### ✨ Features
