@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, Post, Req, Res, UnauthorizedException, UseG
 import { AuthService } from './auth.service';
 import type { Response, Request } from 'express';
 import ms from 'ms';
-import { AppConfigService } from 'src/config/app-config.service';
+import { AppConfigService } from '../config/app-config.service';
 import { JwtAuthGuard } from './guards/jwt-auth-guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import type { JwtPayload } from './interfaces/jwt-payload.interface';

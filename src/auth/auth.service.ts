@@ -5,7 +5,7 @@ import * as bcrypt from "bcryptjs"
 import { CustomLoggerService } from '../common/logger/logger.service';
 import { RefreshToken, User } from '@prisma/client';
 import ms from 'ms';
-import { AppConfigService } from 'src/config/app-config.service';
+import { AppConfigService } from '../config/app-config.service';
 import type { JwtPayload } from './interfaces/jwt-payload.interface';
 
 type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'>;
