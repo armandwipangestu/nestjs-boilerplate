@@ -1,3 +1,23 @@
+## [1.1.0-rc.3](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.1.0-rc.2...v1.1.0-rc.3) (2026-02-22)
+
+### ✨ Features
+
+* **auth:** add authentication (login, refresh token, logout) ([dac40f4](https://github.com/armandwipangestu/nestjs-boilerplate/commit/dac40f4dc3727e488a3092b4e7b693933c4c44fa))
+* **auth:** add cors allowed origins ([f8f2be8](https://github.com/armandwipangestu/nestjs-boilerplate/commit/f8f2be8c103a910238c568376c9c2b61b769b0cb))
+* **auth:** add register and dto ([5137883](https://github.com/armandwipangestu/nestjs-boilerplate/commit/5137883fb4eb00a98321bd1491fa39f325217780))
+* **database:** add migration and seeder in docker ([369a165](https://github.com/armandwipangestu/nestjs-boilerplate/commit/369a1655045b9e9e9493781285510417371452d0))
+* **docs:** add openapi swagger integration ([6238201](https://github.com/armandwipangestu/nestjs-boilerplate/commit/6238201a68a3c73198e193125cc8704bbc04f10f))
+
+### 🐛 Bug Fixes
+
+* **ci:** add prisma generate in lint ci ([113f5d5](https://github.com/armandwipangestu/nestjs-boilerplate/commit/113f5d563885c5b2661ad254b7446b338a108678))
+* **ci:** change import to relative path ([94cd017](https://github.com/armandwipangestu/nestjs-boilerplate/commit/94cd01764e3552b6f858e52dba99879be15fa89d))
+* **ci:** lint error and warning ([2a19b6f](https://github.com/armandwipangestu/nestjs-boilerplate/commit/2a19b6ff8d3d07bdc08c999a2b70714ee392ffd3))
+
+### 🧹 Chores
+
+* back to root as default user container ([c60fade](https://github.com/armandwipangestu/nestjs-boilerplate/commit/c60fadeada52ff5b5cb15f9748f6dd6681155843))
+
 ## [1.1.0-rc.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2026-02-22)
 
 ### ✨ Features
