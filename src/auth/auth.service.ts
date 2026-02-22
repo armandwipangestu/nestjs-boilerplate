@@ -6,9 +6,8 @@ import { CustomLoggerService } from '../common/logger/logger.service';
 import { RefreshToken, User } from '@prisma/client';
 import ms from 'ms';
 import { AppConfigService } from '../config/app-config.service';
-import type { JwtPayload } from './interfaces/jwt-payload.interface';
-
-type AuthUser = Pick<User, 'id' | 'email' | 'username' | 'role'>;
+import type { AuthUser, JwtPayload, LoginResponse } from './interfaces/auth.interface';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +18,7 @@ export class AuthService {
         private appConfig: AppConfigService,
     ) {}
 
-    async validateUser(email: string, password: string) {
+    async validateUser(email: string, password: string): Promise<User> {
         const user = await this.prisma.user.findUnique({
             where: { email },
         });
@@ -44,8 +43,8 @@ export class AuthService {
         return user;
     }
 
-    async login(user: AuthUser) {
-        const payload = {
+    async login(user: AuthUser): Promise<LoginResponse> {
+        const payload: JwtPayload = {
             sub: user.id,
             email: user.email,
             username: user.username,
@@ -89,7 +88,7 @@ export class AuthService {
         }
     }
 
-    async refreshAccessToken(refreshToken: string) {
+    async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
         try {
             const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
                 secret: this.appConfig.jwt.refreshSecret,
@@ -127,7 +126,7 @@ export class AuthService {
                 throw new UnauthorizedException('User not found or inactive');
             }
 
-            const newPayload = {
+            const newPayload: JwtPayload = {
                 sub: user.id,
                 email: user.email,
                 username: user.username,
@@ -150,7 +149,7 @@ export class AuthService {
         }
     }
 
-    async logout(userId: string, email: string) { 
+    async logout(userId: string, email: string): Promise<void> { 
         await this.prisma.refreshToken.deleteMany({
             where: {
                 userId,
@@ -158,5 +157,43 @@ export class AuthService {
         });
 
         this.logger.log(`User logged out: ${email}`, 'Auth')
+    }
+
+    async register(data: RegisterDto): Promise<AuthUser> {
+        const { email, password, username, firstName, lastName } = data;
+
+        const existingUser = await this.prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email },
+                    { username }
+                ]
+            }
+        });
+
+        if (existingUser) {
+            throw new BadRequestException('User with this email or username already exists');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await this.prisma.user.create({
+            data: {
+                email,
+                username,
+                password: hashedPassword,
+                firstName,
+                lastName,
+            }
+        });
+
+        this.logger.log(`User registered: ${email}`, 'Auth');
+
+        return {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            role: user.role,
+        };
     }
 }
