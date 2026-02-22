@@ -14,6 +14,12 @@ export class AppConfigService {
     return this.config.getOrThrow<AppConfig['env']>('app.env');
   }
 
+  get corsAllowedOrigins(): string[] | boolean {
+    const origins = this.env.corsAllowedOrigins;
+    if (!origins || origins === '*') return true;
+    return origins.split(',').map((o) => o.trim());
+  }
+
   get redis() {
     return this.config.getOrThrow<AppConfig['redis']>('app.redis');
   }
