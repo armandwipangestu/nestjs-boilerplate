@@ -1,0 +1,32 @@
+services:
+  db-nestjs-boilerplate:
+    image: postgres:17-bookworm
+    container_name: db-nestjs-boilerplate
+    restart: always
+    env_file: .env.postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./docker-data/postgres:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+
+  pgadmin4-nestjs-boilerplate:
+    image: dpage/pgadmin4:9.10.0
+    container_name: pgadmin4-nestjs-boilerplate
+    restart: always
+    env_file: .env.postgres
+    ports:
+      - "5051:80"
+    volumes:
+      - ./docker-data/pgadmin:/var/lib/pgadmin
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+    depends_on:
+      - db-nestjs-boilerplate
