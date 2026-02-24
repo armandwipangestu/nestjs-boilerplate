@@ -28,6 +28,15 @@ export interface AppConfig {
     cookieSecure: boolean;
     corsAllowedOrigins: string;
   };
+
+  throttler: {
+    ttl: number;
+    limit: number;
+  };
+
+  cache: {
+    ttl: number;
+  };
 }
 
 export default registerAs('app', () => ({
@@ -53,5 +62,12 @@ export default registerAs('app', () => ({
     port: parseInt(process.env.PORT ?? '3000', 10),
     cookieSecure: process.env.COOKIE_SECURE === 'true',
     corsAllowedOrigins: process.env.CORS_ALLOWED_ORIGINS ?? '*',
+  },
+  throttler: {
+    ttl: parseInt(process.env.THROTTLER_TTL ?? '60', 10),
+    limit: parseInt(process.env.THROTTLER_LIMIT ?? '10', 10),
+  },
+  cache: {
+    ttl: parseInt(process.env.CACHE_TTL ?? '60', 10),
   },
 }));

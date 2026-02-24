@@ -21,6 +21,16 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
+  const rateLimit = await import('express-rate-limit');
+  app.use(
+    rateLimit.default({
+      windowMs: configService.throttler.ttl * 1000,
+      max: configService.throttler.limit,
+      standardHeaders: true,
+      legacyHeaders: false,
+    }),
+  );
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
