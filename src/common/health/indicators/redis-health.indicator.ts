@@ -24,21 +24,16 @@ export class RedisHealthIndicator extends HealthIndicator {
       // Race the ping against a timeout to prevent hanging when Redis is down.
       // This is necessary because maxRetriesPerRequest: null means ioredis will
       // queue commands indefinitely while trying to reconnect.
+      const timeoutMessage = `Redis PING timed out after ${PING_TIMEOUT_MS}ms`;
       const pong = await Promise.race([
         this.redisClient.ping(),
-        new Promise<never>((_, reject) =>
-          setTimeout(
-            () =>
-              reject(
-                new Error(`Redis PING timed out after ${PING_TIMEOUT_MS}ms`),
-              ),
-            PING_TIMEOUT_MS,
-          ),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error(timeoutMessage)), PING_TIMEOUT_MS),
         ),
       ]);
 
       if (pong !== 'PONG') {
-        throw new Error(`Unexpected Redis PING response: ${pong}`);
+        throw new Error(`Unexpected Redis PING response: ${String(pong)}`);
       }
 
       return this.getStatus(key, true);

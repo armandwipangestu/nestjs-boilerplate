@@ -1,6 +1,5 @@
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Throttle } from '@nestjs/throttler';
 import { CacheKey, CacheTTL } from './common/cache/decorators/cache.decorator';
 import { CustomCacheInterceptor } from './common/cache/interceptors/cache.interceptor';
 
