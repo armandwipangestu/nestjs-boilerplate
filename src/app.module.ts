@@ -7,12 +7,13 @@ import appConfig from './config/app.config';
 import { AuthModule } from './auth/auth.module';
 import { AppConfigModule } from './config/app-config.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { AppConfigService } from './config/app-config.service';
 import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from './common/cache/cache.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { CustomLoggerService } from './common/logger/logger.service';
+import { RedisModule, REDIS_CLIENT } from './common/redis/redis.module';
+import { HybridThrottlerStorage } from './common/throttler/hybrid-throttler-storage';
 import Redis from 'ioredis';
 
 @Module({
@@ -22,33 +23,32 @@ import Redis from 'ioredis';
       load: [appConfig],
     }),
     ThrottlerModule.forRootAsync({
-      imports: [AppConfigModule, LoggerModule],
-      inject: [AppConfigService, CustomLoggerService],
-      useFactory: (config: AppConfigService, logger: CustomLoggerService) => {
+      imports: [AppConfigModule, LoggerModule, RedisModule],
+      inject: [AppConfigService, CustomLoggerService, REDIS_CLIENT],
+      useFactory: (
+        config: AppConfigService,
+        logger: CustomLoggerService,
+        redisClient: Redis,
+      ) => {
         logger.log(
-          `Initializing Throttler with Redis storage (TTL: ${config.throttler.ttl}s, Limit: ${config.throttler.limit})`,
+          `Initializing Throttler with Hybrid storage (TTL: ${config.throttler.ttl}s, Limit: ${config.throttler.limit})`,
           'ThrottlerInitialization',
         );
         return {
           throttlers: [
             {
-              ttl: config.throttler.ttl * 1000, // Throttler TTL is in milliseconds
+              ttl: config.throttler.ttl * 1000,
               limit: config.throttler.limit,
             },
           ],
-          storage: new ThrottlerStorageRedisService(
-            new Redis({
-              host: config.redis.host,
-              port: config.redis.port,
-              password: config.redis.password,
-            }),
-          ),
+          storage: new HybridThrottlerStorage(redisClient, logger),
         };
       },
     }),
     PrismaModule,
     AuthModule,
     AppConfigModule,
+    RedisModule,
     CacheModule,
     LoggerModule,
   ],

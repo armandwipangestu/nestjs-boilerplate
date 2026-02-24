@@ -12,7 +12,7 @@ export class AppController {
   @UseInterceptors(CustomCacheInterceptor)
   @CacheKey('hello_cache')
   @CacheTTL(30)
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  // @Throttle({ default: { limit: 5, ttl: 60000 } })
   getHello(): string {
     return this.appService.getHello();
   }
