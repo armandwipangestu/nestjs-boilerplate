@@ -31,4 +31,12 @@ export class AppConfigService {
   get databaseUrl() {
     return this.config.getOrThrow<string>('app.databaseUrl');
   }
+
+  get throttler() {
+    return this.config.getOrThrow<AppConfig['throttler']>('app.throttler');
+  }
+
+  get cache() {
+    return this.config.getOrThrow<AppConfig['cache']>('app.cache');
+  }
 }

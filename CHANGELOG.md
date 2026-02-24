@@ -1,3 +1,18 @@
+## [1.2.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.1.0...v1.2.0-rc.1) (2026-02-24)
+
+### ✨ Features
+
+* **health:** add health check endpoint with redis, database, memory and disk monitoring ([4d41de3](https://github.com/armandwipangestu/nestjs-boilerplate/commit/4d41de3f309fa1a7433c4908f8c32afc6a1d4ddc))
+* **security:** add rate limiting, throttle, and caching ([ca33114](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ca331145a159d61984c4b20812cc16d7e8d9afcc))
+
+### 🐛 Bug Fixes
+
+* **ci:** lining ([b6bcc70](https://github.com/armandwipangestu/nestjs-boilerplate/commit/b6bcc703ebc282beae944ce9bc8873f76c6d8b6f))
+
+### ♻️ Refactor
+
+* **redis:** centralize redis module and add in-memory fallback support ([5edc937](https://github.com/armandwipangestu/nestjs-boilerplate/commit/5edc9370b57c13a6c1315a6ef39dc62ce6ea2f45))
+
 ## [1.1.0](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.0.0...v1.1.0) (2026-02-22)
 
 ### ✨ Features
