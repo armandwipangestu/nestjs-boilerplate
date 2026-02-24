@@ -15,6 +15,7 @@ import { CustomLoggerService } from './common/logger/logger.service';
 import { RedisModule, REDIS_CLIENT } from './common/redis/redis.module';
 import { HybridThrottlerStorage } from './common/throttler/hybrid-throttler-storage';
 import Redis from 'ioredis';
+import { HealthModule } from './common/health/health.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import Redis from 'ioredis';
     RedisModule,
     CacheModule,
     LoggerModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
