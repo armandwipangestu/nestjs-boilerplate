@@ -1,13 +1,17 @@
 meta {
-  name: Refresh Token
+  name: Logout
   type: http
-  seq: 5
+  seq: 4
 }
 
 post {
-  url: {{host}}/auth/refresh
+  url: {{host}}/auth/logout
   body: none
   auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
 }
 
 body:json {
