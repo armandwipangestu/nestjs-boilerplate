@@ -17,24 +17,20 @@ async function bootstrap() {
 
   const configService = app.get(AppConfigService);
 
-  logger.log(
-    `Starting application in ${configService.env.nodeEnv} mode`,
-    'Bootstrap',
-  );
+  logger.log('Application starting', 'Bootstrap', {
+    nodeEnv: configService.env.nodeEnv,
+  });
 
   if (configService.isCorsEnabled) {
     const cors = configService.corsConfig;
 
     app.enableCors(cors);
 
-    logger.log(
-      `CORS enabled | origins: ${
-        Array.isArray(cors.origin) ? cors.origin.join(', ') : cors.origin
-      } | methods: ${cors.methods.join(', ')} | credentials: ${
-        cors.credentials ? 'true' : 'false'
-      }`,
-      'Bootstrap',
-    );
+    logger.log('CORS enabled', 'Bootstrap', {
+      origins: cors.origin,
+      methods: cors.methods,
+      credentials: cors.credentials,
+    });
   }
 
   app.use(cookieParser());
@@ -59,15 +55,17 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
 
-    logger.log('Swagger documentation enabled at /docs', 'Bootstrap');
+    logger.log('Swagger documentation enabled', 'Bootstrap', {
+      path: '/docs',
+    });
   }
 
   await app.listen(configService.env.port, configService.env.host);
 
-  logger.log(
-    `Application is running on http://${configService.env.host}:${configService.env.port}`,
-    'Bootstrap',
-  );
+  logger.log('Application started', 'Bootstrap', {
+    host: configService.env.host,
+    port: configService.env.port,
+  });
 }
 
 bootstrap().catch((err) => {
