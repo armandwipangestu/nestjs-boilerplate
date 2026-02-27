@@ -1,3 +1,21 @@
+## [1.3.0-rc.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.3.0-rc.1...v1.3.0-rc.2) (2026-02-27)
+
+### 🐛 Bug Fixes
+
+* **ci:** lint ([e2467f5](https://github.com/armandwipangestu/nestjs-boilerplate/commit/e2467f5747fdfbdbb71a32acfca4e693091dbcf0))
+
+### 🧹 Chores
+
+* update bruno ([7f47a29](https://github.com/armandwipangestu/nestjs-boilerplate/commit/7f47a29a8ffbc599c94f650c3a7ce3088596af9c))
+* update log boostrap ([b44959b](https://github.com/armandwipangestu/nestjs-boilerplate/commit/b44959b3f98666f9bf943e0de4a89cc3667a987c))
+
+### ♻️ Refactor
+
+* **bootstrap:** add log & binding network app ([9d1cba4](https://github.com/armandwipangestu/nestjs-boilerplate/commit/9d1cba455329b945832d6c1688a39cbd29216044))
+* **loggin:** add request & response log ([66c40d4](https://github.com/armandwipangestu/nestjs-boilerplate/commit/66c40d40b3f2cc79b58b704f29fe2288151fc141))
+* **logging:** update log format ([ae49796](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ae497964e5551777e0c163f5d423053377030e40))
+* **swagger:** add enable and disable by env ([8f1edc0](https://github.com/armandwipangestu/nestjs-boilerplate/commit/8f1edc0dc3e73ab89ffdd9848ab9376aee7ba8cb))
+
 ## [1.3.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.2.0...v1.3.0-rc.1) (2026-02-27)
 
 ### ✨ Features
