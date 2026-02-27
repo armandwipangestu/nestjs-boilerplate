@@ -1,3 +1,9 @@
+## [1.3.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.2.0...v1.3.0-rc.1) (2026-02-27)
+
+### ✨ Features
+
+* **post:** add crud post endpoint ([d07164c](https://github.com/armandwipangestu/nestjs-boilerplate/commit/d07164c4460d4625251900cd85c772418769d468))
+
 ## [1.2.0](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.1.0...v1.2.0) (2026-02-24)
 
 ### ✨ Features
