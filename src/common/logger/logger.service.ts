@@ -95,32 +95,37 @@ export class CustomLoggerService implements LoggerService {
     this.logger.level = logLevel;
   }
 
-  log(message: string, trace?: string, context?: string) {
-    this.logger.info(message, { trace, context });
+  log(message: string, context?: string, meta?: Record<string, unknown>) {
+    this.logger.info(message, { context, ...meta });
   }
 
-  // NOTE: Only this must have trace
-  error(message: string, trace?: string, context?: string) {
-    this.logger.error(message, { trace, context });
+  debug(message: string, context?: string, meta?: Record<string, unknown>) {
+    this.logger.debug(message, { context, ...meta });
   }
 
-  warn(message: string, trace?: string, context?: string) {
-    this.logger.warn(message, { trace, context });
+  warn(message: string, context?: string, meta?: Record<string, unknown>) {
+    this.logger.warn(message, { context, ...meta });
   }
 
-  debug(message: string, trace?: string, context?: string) {
-    this.logger.debug(message, { trace, context });
+  error(
+    message: string,
+    stack?: string,
+    context?: string,
+    meta?: Record<string, unknown>,
+  ) {
+    this.logger.error(message, { context, stack, ...meta });
   }
 
-  verbose(message: string, trace?: string, context?: string) {
-    this.logger.info(message, { trace, context, level: 'trace' });
+  fatal(
+    message: string,
+    stack?: string,
+    context?: string,
+    meta?: Record<string, unknown>,
+  ) {
+    this.logger.log('fatal', message, { context, stack, ...meta });
   }
 
-  fatal(message: string, trace?: string, context?: string) {
-    this.logger.log('fatal', message, { trace, context });
-  }
-
-  trace(message: string, trace?: string, context?: string) {
-    this.logger.log('trace', message, { trace, context });
+  trace(message: string, context?: string, meta?: Record<string, unknown>) {
+    this.logger.log('trace', message, { context, ...meta });
   }
 }
