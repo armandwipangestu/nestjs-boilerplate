@@ -58,8 +58,7 @@ export class LoggingMiddleware implements NestMiddleware {
 
     // ── Incoming request (debug – low noise in production) ───────────────────
     this.logger.debug(
-      `→ ${method} ${url}`,
-      undefined,
+      `Request: ${method} ${url}`,
       CONTEXT,
       {
         requestId,
@@ -94,14 +93,14 @@ export class LoggingMiddleware implements NestMiddleware {
         ...(userId ? { userId } : {}),
       };
 
-      const message = `← ${method} ${url} ${statusCode} ${durationMs.toFixed(2)}ms`;
+      const message = `Response: ${method} ${url} ${statusCode} ${durationMs.toFixed(2)}ms`;
 
       if (statusCode >= 500) {
         this.logger.error(message, undefined, CONTEXT, meta);
       } else if (statusCode >= 400) {
-        this.logger.warn(message, undefined, CONTEXT, meta);
+        this.logger.warn(message, CONTEXT, meta);
       } else {
-        this.logger.log(message, undefined, CONTEXT, meta);
+        this.logger.log(message, CONTEXT, meta);
       }
     });
 
