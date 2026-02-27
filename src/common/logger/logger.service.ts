@@ -107,11 +107,21 @@ export class CustomLoggerService implements LoggerService {
     this.logger.warn(message, { context, ...meta });
   }
 
-  error(message: string, stack?: string, context?: string, meta?: Record<string, unknown>) {
+  error(
+    message: string,
+    stack?: string,
+    context?: string,
+    meta?: Record<string, unknown>,
+  ) {
     this.logger.error(message, { context, stack, ...meta });
   }
 
-  fatal(message: string, stack?: string, context?: string, meta?: Record<string, unknown>) {
+  fatal(
+    message: string,
+    stack?: string,
+    context?: string,
+    meta?: Record<string, unknown>,
+  ) {
     this.logger.log('fatal', message, { context, stack, ...meta });
   }
 

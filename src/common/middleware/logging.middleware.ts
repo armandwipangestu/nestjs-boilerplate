@@ -24,9 +24,7 @@ function sanitizeBody(body: unknown): unknown {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return body;
 
   const sanitized: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(
-    body as Record<string, unknown>,
-  )) {
+  for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
     sanitized[key] = SENSITIVE_FIELDS.has(key) ? '[REDACTED]' : value;
   }
   return sanitized;
@@ -56,30 +54,28 @@ export class LoggingMiddleware implements NestMiddleware {
     const { method, originalUrl: url, ip } = req;
     const userAgent = req.get('user-agent') ?? '-';
 
+    const body =
+      typeof req.body === 'object' && req.body !== null
+        ? (req.body as Record<string, unknown>)
+        : undefined;
+
     // ── Incoming request (debug – low noise in production) ───────────────────
-    this.logger.debug(
-      `Request: ${method} ${url}`,
-      CONTEXT,
-      {
-        requestId,
-        ip,
-        userAgent,
-        ...(BODY_METHODS.has(method) && Object.keys(req.body ?? {}).length > 0
-          ? { body: sanitizeBody(req.body) }
-          : {}),
-      }
-    );
+    this.logger.debug(`Request: ${method} ${url}`, CONTEXT, {
+      requestId,
+      ip,
+      userAgent,
+      ...(BODY_METHODS.has(method) && body && Object.keys(body).length > 0
+        ? { body: sanitizeBody(body) }
+        : {}),
+    });
 
     // ── Outgoing response ────────────────────────────────────────────────────
     res.on('finish', () => {
-      const durationMs =
-        Number(process.hrtime.bigint() - startAt) / 1_000_000;
+      const durationMs = Number(process.hrtime.bigint() - startAt) / 1_000_000;
       const { statusCode } = res;
 
       // Try to attach the authenticated user id if already resolved by Passport
-      const userId = (
-        req as Request & { user?: { sub?: string } }
-      ).user?.sub;
+      const userId = (req as Request & { user?: { sub?: string } }).user?.sub;
 
       const meta = {
         requestId,
