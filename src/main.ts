@@ -29,16 +29,18 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('NestJS Boilerplate API')
-    .setDescription(packageJson.description)
-    .setVersion(packageJson.version)
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  if (configService.env.enableSwagger) {
+    const config = new DocumentBuilder()
+      .setTitle('NestJS Boilerplate API')
+      .setDescription(packageJson.description)
+      .setVersion(packageJson.version)
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document);
+  }
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(configService.env.port);
 }
 
 bootstrap().catch((err) => {

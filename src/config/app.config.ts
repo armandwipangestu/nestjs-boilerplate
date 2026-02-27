@@ -27,6 +27,7 @@ export interface AppConfig {
     port: number;
     cookieSecure: boolean;
     corsAllowedOrigins: string;
+    enableSwagger: boolean;
   };
 
   throttler: {
@@ -62,6 +63,7 @@ export default registerAs('app', () => ({
     port: parseInt(process.env.PORT ?? '3000', 10),
     cookieSecure: process.env.COOKIE_SECURE === 'true',
     corsAllowedOrigins: process.env.CORS_ALLOWED_ORIGINS ?? '*',
+    enableSwagger: process.env.ENABLE_SWAGGER === 'true',
   },
   throttler: {
     ttl: parseInt(process.env.THROTTLER_TTL ?? '60', 10),
