@@ -47,12 +47,12 @@ import { PostModule } from './post/post.module';
         };
       },
     }),
+    LoggerModule,
     PrismaModule,
     AuthModule,
     AppConfigModule,
     RedisModule,
     CacheModule,
-    LoggerModule,
     HealthModule,
     PostModule,
   ],

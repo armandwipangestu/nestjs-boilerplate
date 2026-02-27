@@ -24,6 +24,7 @@ export interface AppConfig {
 
   env: {
     nodeEnv: string;
+    host: string;
     port: number;
     cookieSecure: boolean;
     corsAllowedOrigins: string;
@@ -60,6 +61,7 @@ export default registerAs('app', () => ({
   },
   env: {
     nodeEnv: process.env.NODE_ENV ?? 'development',
+    host: process.env.HOST ?? '127.0.0.1',
     port: parseInt(process.env.PORT ?? '3000', 10),
     cookieSecure: process.env.COOKIE_SECURE === 'true',
     corsAllowedOrigins: process.env.CORS_ALLOWED_ORIGINS ?? '*',

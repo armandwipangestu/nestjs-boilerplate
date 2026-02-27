@@ -5,21 +5,40 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import { AppConfigService } from './config/app-config.service';
+import { CustomLoggerService } from './common/logger/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  const logger = app.get(CustomLoggerService);
+  app.useLogger(logger);
 
   const configService = app.get(AppConfigService);
 
-  app.enableCors({
-    origin: configService.corsAllowedOrigins,
-    credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  });
+  logger.log(
+    `Starting application in ${configService.env.nodeEnv} mode`,
+    'Bootstrap',
+  );
+
+  if (configService.isCorsEnabled) {
+    const cors = configService.corsConfig;
+
+    app.enableCors(cors);
+
+    logger.log(
+      `CORS enabled | origins: ${
+        Array.isArray(cors.origin) ? cors.origin.join(', ') : cors.origin
+      } | methods: ${cors.methods.join(', ')} | credentials: ${
+        cors.credentials ? 'true' : 'false'
+      }`,
+      'Bootstrap',
+    );
+  }
 
   app.use(cookieParser());
+  logger.debug('Cookie parser enabled', 'Bootstrap');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,6 +47,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  logger.debug('Global ValidationPipe enabled', 'Bootstrap');
 
   if (configService.env.enableSwagger) {
     const config = new DocumentBuilder()
@@ -38,9 +58,16 @@ async function bootstrap() {
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
+
+    logger.log('Swagger documentation enabled at /docs', 'Bootstrap');
   }
 
-  await app.listen(configService.env.port);
+  await app.listen(configService.env.port, configService.env.host);
+
+  logger.log(
+    `Application is running on http://${configService.env.host}:${configService.env.port}`,
+    'Bootstrap',
+  );
 }
 
 bootstrap().catch((err) => {
