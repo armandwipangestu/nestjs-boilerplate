@@ -1,0 +1,35 @@
+meta {
+  name: Get Posts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/posts?page=1&limit=10&published=true
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+  published: true
+  ~search: My Example Post
+}
+
+script:post-response {
+  const body = res.getBody();
+  const post_id = body?.data?.[0]?.id;
+  
+  if (post_id) {
+    bru.setEnvVar("post_id", post_id);
+    console.log("post_id updated: ", post_id)
+  } else {
+    console.log("post_id not found in response: ", body)
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

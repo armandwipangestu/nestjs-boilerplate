@@ -1,11 +1,11 @@
 meta {
-  name: Register
+  name: Login
   type: http
-  seq: 3
+  seq: 2
 }
 
 post {
-  url: {{host}}/auth/register
+  url: {{host}}/auth/login
   body: json
   auth: inherit
 }
@@ -13,10 +13,7 @@ post {
 body:json {
   {
     "email": "{{email}}",
-    "username": "{{username}}",
-    "password": "{{password}}",
-    "firstName": "{{firstName}}",
-    "lastName": "{{lastName}}"
+    "password": "{{password}}"
   }
 }
 

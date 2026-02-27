@@ -5,21 +5,36 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import { AppConfigService } from './config/app-config.service';
+import { CustomLoggerService } from './common/logger/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  const logger = app.get(CustomLoggerService);
+  app.useLogger(logger);
 
   const configService = app.get(AppConfigService);
 
-  app.enableCors({
-    origin: configService.corsAllowedOrigins,
-    credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+  logger.log('Application starting', 'Bootstrap', {
+    nodeEnv: configService.env.nodeEnv,
   });
 
+  if (configService.isCorsEnabled) {
+    const cors = configService.corsConfig;
+
+    app.enableCors(cors);
+
+    logger.log('CORS enabled', 'Bootstrap', {
+      origins: cors.origin,
+      methods: cors.methods,
+      credentials: cors.credentials,
+    });
+  }
+
   app.use(cookieParser());
+  logger.debug('Cookie parser enabled', 'Bootstrap');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,17 +43,29 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  logger.debug('Global ValidationPipe enabled', 'Bootstrap');
 
-  const config = new DocumentBuilder()
-    .setTitle('NestJS Boilerplate API')
-    .setDescription(packageJson.description)
-    .setVersion(packageJson.version)
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  if (configService.env.enableSwagger) {
+    const config = new DocumentBuilder()
+      .setTitle('NestJS Boilerplate API')
+      .setDescription(packageJson.description)
+      .setVersion(packageJson.version)
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+    logger.log('Swagger documentation enabled', 'Bootstrap', {
+      path: '/docs',
+    });
+  }
+
+  await app.listen(configService.env.port, configService.env.host);
+
+  logger.log('Application started', 'Bootstrap', {
+    host: configService.env.host,
+    port: configService.env.port,
+  });
 }
 
 bootstrap().catch((err) => {

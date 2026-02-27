@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
@@ -16,6 +17,7 @@ import { RedisModule, REDIS_CLIENT } from './common/redis/redis.module';
 import { HybridThrottlerStorage } from './common/throttler/hybrid-throttler-storage';
 import Redis from 'ioredis';
 import { HealthModule } from './common/health/health.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -46,13 +48,14 @@ import { HealthModule } from './common/health/health.module';
         };
       },
     }),
+    LoggerModule,
     PrismaModule,
     AuthModule,
     AppConfigModule,
     RedisModule,
     CacheModule,
-    LoggerModule,
     HealthModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [
@@ -63,4 +66,8 @@ import { HealthModule } from './common/health/health.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggingMiddleware).forRoutes('*');
+  }
+}

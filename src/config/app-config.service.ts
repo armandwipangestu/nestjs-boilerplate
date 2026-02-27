@@ -14,10 +14,31 @@ export class AppConfigService {
     return this.config.getOrThrow<AppConfig['env']>('app.env');
   }
 
-  get corsAllowedOrigins(): string[] | boolean {
+  get isCorsEnabled(): boolean {
     const origins = this.env.corsAllowedOrigins;
-    if (!origins || origins === '*') return true;
+    return !!origins;
+  }
+
+  get corsAllowedOrigins(): string[] {
+    const origins = this.env.corsAllowedOrigins;
+
+    if (!origins || origins === '*') {
+      return ['*'];
+    }
+
     return origins.split(',').map((o) => o.trim());
+  }
+
+  get corsConfig() {
+    const origins = this.corsAllowedOrigins;
+
+    return {
+      origin: origins,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+    };
   }
 
   get redis() {

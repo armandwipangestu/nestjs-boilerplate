@@ -46,7 +46,6 @@ export class RolesGuard implements CanActivate {
 
     this.logger.log(
       `User role ${user.role} is authorized to access this resource`,
-      '',
       'RolesGuard.canActivate',
     );
     return true;
