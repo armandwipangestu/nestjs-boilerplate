@@ -1,0 +1,20 @@
+meta {
+  name: Delete Post by Id
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/posts/{{post_id}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

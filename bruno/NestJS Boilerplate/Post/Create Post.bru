@@ -1,0 +1,28 @@
+meta {
+  name: Create Post
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/posts
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "title": "{{title}}",
+    "content": "{{content}}",
+    "published": {{published}}
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

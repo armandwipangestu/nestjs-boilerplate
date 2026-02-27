@@ -16,6 +16,7 @@ import { RedisModule, REDIS_CLIENT } from './common/redis/redis.module';
 import { HybridThrottlerStorage } from './common/throttler/hybrid-throttler-storage';
 import Redis from 'ioredis';
 import { HealthModule } from './common/health/health.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { HealthModule } from './common/health/health.module';
     CacheModule,
     LoggerModule,
     HealthModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [
