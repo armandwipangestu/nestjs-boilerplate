@@ -18,12 +18,20 @@ import { HybridThrottlerStorage } from './common/throttler/hybrid-throttler-stor
 import Redis from 'ioredis';
 import { HealthModule } from './common/health/health.module';
 import { PostModule } from './post/post.module';
+import { StorageModule } from './common/storage/storage.module';
+import { UserModule } from './user/user.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     ThrottlerModule.forRootAsync({
       imports: [AppConfigModule, LoggerModule, RedisModule],
@@ -56,6 +64,8 @@ import { PostModule } from './post/post.module';
     CacheModule,
     HealthModule,
     PostModule,
+    StorageModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

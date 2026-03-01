@@ -2,7 +2,7 @@ import { Expose, Type } from 'class-transformer';
 import { Role } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserResponseDto {
+export class AuthUserResponseDto {
   @ApiProperty({
     example: 'clw1234567890',
     description: 'The unique identifier of the user',
@@ -34,8 +34,8 @@ export class AuthResponseDto {
   @Expose()
   accessToken: string;
 
-  @ApiProperty({ type: UserResponseDto, description: 'The user information' })
+  @ApiProperty({ type: AuthUserResponseDto, description: 'The user information' })
   @Expose()
-  @Type(() => UserResponseDto)
-  user: UserResponseDto;
+  @Type(() => AuthUserResponseDto)
+  user: AuthUserResponseDto;
 }

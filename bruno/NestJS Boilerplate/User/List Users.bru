@@ -1,0 +1,27 @@
+meta {
+  name: List Users
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/users?page=1&limit=10&isActive=true
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+  isActive: true
+  ~search: 
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -21,6 +21,7 @@ model User {
   lastName      String?        @map("last_name")
   role          Role           @default(USER)
   isActive      Boolean        @default(true) @map("is_active")
+  avatarUrl     String?        @map("avatar_url")
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
   posts         Post[]

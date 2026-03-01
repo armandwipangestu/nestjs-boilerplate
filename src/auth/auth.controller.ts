@@ -22,7 +22,7 @@ import type {
 } from './interfaces/auth.interface';
 import { LoginDto } from './dto/login.dto';
 import { plainToInstance } from 'class-transformer';
-import { AuthResponseDto, UserResponseDto } from './dto/auth-response.dto';
+import { AuthResponseDto, AuthUserResponseDto } from './dto/auth-response.dto';
 import { RegisterDto } from './dto/register.dto';
 import {
   ApiTags,
@@ -45,13 +45,13 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'User successfully registered',
-    type: UserResponseDto,
+    type: AuthUserResponseDto,
   })
   @ApiResponse({ status: 400, description: 'User already exists' })
   @Post('register')
-  async register(@Body() registerDto: RegisterDto): Promise<UserResponseDto> {
+  async register(@Body() registerDto: RegisterDto): Promise<AuthUserResponseDto> {
     const user = await this.authService.register(registerDto);
-    return plainToInstance(UserResponseDto, user, {
+    return plainToInstance(AuthUserResponseDto, user, {
       excludeExtraneousValues: true,
     });
   }

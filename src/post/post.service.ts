@@ -9,11 +9,8 @@ import { CacheService } from '../common/cache/cache.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostQueryDto } from './dto/post-query.dto';
-import {
-  PaginationMetaDto,
-  PostListResponseDto,
-  PostResponseDto,
-} from './dto/post-response.dto';
+import { PostListResponseDto, PostResponseDto } from './dto/post-response.dto';
+import { PaginationMetaDto } from '../common/dto/pagination.dto';
 import { plainToInstance } from 'class-transformer';
 import type { Post, Prisma } from '@prisma/client';
 import * as crypto from 'crypto';

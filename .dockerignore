@@ -60,3 +60,5 @@ docker-data
 # Prisma
 generated/prisma
 prisma/generated
+
+uploads

@@ -1,0 +1,28 @@
+meta {
+  name: Upload Avatar
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/users/{{user_id}}/avatar
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:multipart-form {
+  file: @file(/media/devnull/DATA WINDOWS/Pictures/Me/Bangkit/Best/download.png)
+}
+
+vars:pre-request {
+  ~user_id: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

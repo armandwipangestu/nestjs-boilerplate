@@ -49,6 +49,33 @@ async function main() {
     // Seed Users
     console.log('👥 Seeding users...');
 
+    // Create 1 fixed super admin
+    console.log('👑 Creating fixed super admin...');
+
+    const fixedAdminEmail = 'admin@example.com';
+    const fixedAdminPasswordPlain = 'Admin123!';
+    const fixedAdminPassword = await bcrypt.hash(fixedAdminPasswordPlain, 10);
+
+    const fixedAdmin = await prisma.user.create({
+      data: {
+        email: fixedAdminEmail,
+        username: 'superadmin',
+        password: fixedAdminPassword,
+        firstName: 'Super',
+        lastName: 'Admin',
+        role: Role.ADMIN,
+        isActive: true,
+      },
+    });
+
+    users.push(fixedAdmin);
+
+    console.log(`  ✓ Fixed admin created: ${fixedAdmin.email}`);
+    console.log(`  🔐 Login with:`);
+    console.log(`     Email:    ${fixedAdminEmail}`);
+    console.log(`     Password: ${fixedAdminPasswordPlain}`);
+    console.log();
+
     // Create 3 realistic users as admin
     console.log('👑 Creating admin users...');
     const adminPassword = await bcrypt.hash('admin123', 10);
