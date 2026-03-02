@@ -34,9 +34,8 @@ import { UserQueryDto } from './dto/user-query.dto';
 import { UserResponseDto, UserListResponseDto } from './dto/user-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
 import { AclGuard } from '../auth/guards/acl.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
 import { Permissions } from '../auth/decorators/permissions.decorator';
-import { ROLES, PERMISSIONS } from '../auth/constants/acl.constant';
+import { PERMISSIONS } from '../auth/constants/acl.constant';
 
 @ApiTags('Users')
 @Controller('users')

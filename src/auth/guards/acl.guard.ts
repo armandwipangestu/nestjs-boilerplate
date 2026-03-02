@@ -7,7 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { CustomLoggerService } from '../../common/logger/logger.service';
 import { RequestWithUser } from '../interfaces/auth.interface';
-import { ROLES_KEY } from '../decorators/roles.decorator';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 
 @Injectable()
@@ -18,17 +17,12 @@ export class AclGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
-      ROLES_KEY,
-      [context.getHandler(), context.getClass()],
-    );
-
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
       PERMISSIONS_KEY,
       [context.getHandler(), context.getClass()],
     );
 
-    if (!requiredRoles && !requiredPermissions) {
+    if (!requiredPermissions || requiredPermissions.length === 0) {
       return true;
     }
 
@@ -36,10 +30,11 @@ export class AclGuard implements CanActivate {
     const user = request.user;
 
     if (!user) {
-      this.logger.error(`User not found`, '', 'AclGuard.canActivate');
+      this.logger.error('User not found in request', '', 'AclGuard');
       throw new ForbiddenException('User not found');
     }
 
+    // Super Admin Bypass
     const isSuperAdmin = user.roles?.includes('ADMIN');
     if (isSuperAdmin) {
       this.logger.debug(
@@ -49,33 +44,24 @@ export class AclGuard implements CanActivate {
       return true;
     }
 
-    const roleMatch = requiredRoles
-      ? requiredRoles.some((role) => user.roles?.includes(role))
-      : true;
+    // Permission Check
+    const hasAllPermissions = requiredPermissions.every((permission) =>
+      user.permissions?.includes(permission),
+    );
 
-    const permissionMatch = requiredPermissions
-      ? requiredPermissions.every((permission) =>
-          user.permissions?.includes(permission),
-        )
-      : true;
-
-    if (!roleMatch || !permissionMatch) {
-      const issues: string[] = [];
-      if (!roleMatch && requiredRoles) issues.push(`roles [${requiredRoles.join(', ')}]`);
-      if (!permissionMatch && requiredPermissions) issues.push(`permissions [${requiredPermissions.join(', ')}]`);
-
+    if (!hasAllPermissions) {
       this.logger.error(
-        `Access denied. User ${user.email} missing: ${issues.join(' and ')}`,
+        `Access denied. User ${user.email} missing required permissions [${requiredPermissions.join(', ')}]`,
         '',
         'AclGuard',
       );
       throw new ForbiddenException(
-        `You do not have the required ${issues.join(' and ')} to access this resource`,
+        `You do not have the required permissions [${requiredPermissions.join(', ')}] to access this resource`,
       );
     }
 
     this.logger.log(
-      `Access granted for ${user.email} based on permissions [${user.permissions?.join(', ')}]`,
+      `Access granted for ${user.email} based on permissions [${requiredPermissions.join(', ')}]`,
       'AclGuard',
     );
     return true;
