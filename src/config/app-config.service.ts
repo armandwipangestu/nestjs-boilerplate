@@ -60,4 +60,8 @@ export class AppConfigService {
   get cache() {
     return this.config.getOrThrow<AppConfig['cache']>('app.cache');
   }
+
+  get s3() {
+    return this.config.get<AppConfig['s3']>('app.s3');
+  }
 }

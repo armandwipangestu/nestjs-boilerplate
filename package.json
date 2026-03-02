@@ -1,6 +1,6 @@
 {
   "name": "nestjs-boilerplate",
-  "version": "1.3.0-rc.2",
+  "version": "1.3.0",
   "description": "A powerful, type-safe NestJS boilerplate designed for scalability and developer experience. It comes pre-configured with essential tools like Prisma ORM, JWT Authentication (including Refresh Tokens), RBAC, Swagger documentation, and a robust logging system.",
   "author": "",
   "private": true,
@@ -23,6 +23,7 @@
     "prisma:seed": "bun prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1000.0",
     "@keyv/redis": "^5.1.6",
     "@nest-lab/throttler-storage-redis": "^1.2.0",
     "@nestjs/cache-manager": "^3.1.0",
@@ -32,6 +33,7 @@
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.14",
+    "@nestjs/serve-static": "^5.0.4",
     "@nestjs/swagger": "^11.2.6",
     "@nestjs/terminus": "^11.1.1",
     "@nestjs/throttler": "^6.5.0",
@@ -76,6 +78,7 @@
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/ms": "^2.1.0",
+    "@types/multer": "^2.0.0",
     "@types/node": "^25.3.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",

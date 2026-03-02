@@ -20,6 +20,11 @@ export interface AppConfig {
   logging: {
     level: string;
     dir: string;
+    appLogMaxSize: string;
+    appLogMaxFiles: string;
+    errorLogMaxSize: string;
+    errorLogMaxFiles: string;
+    testMode: boolean;
   };
 
   env: {
@@ -38,6 +43,15 @@ export interface AppConfig {
 
   cache: {
     ttl: number;
+  };
+
+  s3: {
+    accessKeyId?: string;
+    secretAccessKey?: string;
+    endpoint?: string;
+    bucket?: string;
+    region?: string;
+    forcePathStyle?: boolean;
   };
 }
 
@@ -58,6 +72,11 @@ export default registerAs('app', () => ({
   logging: {
     level: process.env.LOG_LEVEL ?? 'info',
     dir: process.env.LOG_DIR ?? './logs',
+    appLogMaxSize: process.env.LOG_APP_MAX_SIZE ?? '20m',
+    appLogMaxFiles: process.env.LOG_APP_MAX_FILES ?? '14d',
+    errorLogMaxSize: process.env.LOG_ERROR_MAX_SIZE ?? '20m',
+    errorLogMaxFiles: process.env.LOG_ERROR_MAX_FILES ?? '30d',
+    testMode: process.env.LOG_TEST_MODE === 'true',
   },
   env: {
     nodeEnv: process.env.NODE_ENV ?? 'development',
@@ -73,5 +92,13 @@ export default registerAs('app', () => ({
   },
   cache: {
     ttl: parseInt(process.env.CACHE_TTL ?? '60', 10),
+  },
+  s3: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    endpoint: process.env.S3_ENDPOINT,
+    bucket: process.env.S3_BUCKET,
+    region: process.env.S3_REGION ?? 'us-east-1',
+    forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true',
   },
 }));

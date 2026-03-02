@@ -1,0 +1,24 @@
+meta {
+  name: Get User
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/users/{{user_id}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+vars:pre-request {
+  ~user_id: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -20,12 +20,20 @@ body:json {
 script:post-response {
   const body = res.getBody();
   const token = body?.accessToken;
+  const user_id = body?.user?.id;
   
   if (token) {
     bru.setEnvVar("access_token", token);
     console.log("access_token updated: ", token)
   } else {
     console.log("token not found in response: ", body)
+  }
+  
+  if (user_id) {
+    bru.setEnvVar("user_id", user_id)
+    console.log("user_id updated: ", user_id)
+  } else {
+    console.log("user_id not found in response: ", body)
   }
 }
 

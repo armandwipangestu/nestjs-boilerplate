@@ -2,7 +2,6 @@ import { Injectable, LoggerService } from '@nestjs/common';
 import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class CustomLoggerService implements LoggerService {
@@ -10,13 +9,15 @@ export class CustomLoggerService implements LoggerService {
 
   constructor() {
     const logsDir = process.env.LOG_DIR || './logs';
+    const appLogMaxSize = process.env.LOG_APP_MAX_SIZE || '20m';
+    const appLogMaxFiles = process.env.LOG_APP_MAX_FILES || '14d';
+    const errorLogMaxSize = process.env.LOG_ERROR_MAX_SIZE || '20m';
+    const errorLogMaxFiles = process.env.LOG_ERROR_MAX_FILES || '30d';
+    const isTest = process.env.LOG_TEST_MODE === 'true';
 
-    // Create logs directory if it doesn't exist
     if (!fs.existsSync(logsDir)) {
       fs.mkdirSync(logsDir, { recursive: true });
     }
-
-    // Define log levels
     const levels = {
       fatal: 0,
       error: 1,
@@ -37,6 +38,27 @@ export class CustomLoggerService implements LoggerService {
     };
 
     winston.addColors(colors);
+
+    const appTransport = new DailyRotateFile({
+      dirname: logsDir,
+      filename: 'application-%DATE%.log',
+      datePattern: isTest ? 'YYYY-MM-DD-HH-mm' : 'YYYY-MM-DD',
+      maxSize: isTest ? undefined : appLogMaxSize,
+      maxFiles: isTest ? 3 : appLogMaxFiles,
+      zippedArchive: true,
+      format: winston.format.json(),
+    });
+
+    const errorTransport = new DailyRotateFile({
+      dirname: logsDir,
+      filename: 'error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      maxSize: errorLogMaxSize,
+      maxFiles: errorLogMaxFiles,
+      zippedArchive: true,
+      level: 'error',
+      format: winston.format.json(),
+    });
 
     // Create logger instance
     this.logger = winston.createLogger({
@@ -68,25 +90,8 @@ export class CustomLoggerService implements LoggerService {
           ),
         }),
 
-        // Daily rotate file for all logs
-        new DailyRotateFile({
-          filename: path.join(logsDir, 'application-%DATE%.log'),
-          datePattern: 'YYYY-MM-DD',
-          maxSize: '20m',
-          maxFiles: '14d',
-          zippedArchive: true,
-          format: winston.format.json(),
-        }),
-
-        new DailyRotateFile({
-          filename: path.join(logsDir, 'error-%DATE%.log'),
-          datePattern: 'YYYY-MM-DD',
-          maxSize: '20m',
-          maxFiles: '30d',
-          zippedArchive: true,
-          level: 'error',
-          format: winston.format.json(),
-        }),
+        appTransport,
+        errorTransport,
       ],
     });
 

@@ -66,6 +66,18 @@ async function bootstrap() {
     host: configService.env.host,
     port: configService.env.port,
   });
+
+  if (configService.logging.testMode) {
+    logger.warn('LOG_TEST_MODE enabled: starting log spam...', 'Bootstrap');
+
+    let counter = 0;
+
+    setInterval(() => {
+      for (let i = 0; i < 20; i++) {
+        logger.log(`Rotation test log #${counter++}`, 'RotateTest');
+      }
+    }, 2000);
+  }
 }
 
 bootstrap().catch((err) => {

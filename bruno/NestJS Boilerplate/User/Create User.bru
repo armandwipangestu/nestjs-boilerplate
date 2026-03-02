@@ -1,0 +1,31 @@
+meta {
+  name: Create User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/users
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "email": "jane@example.com",
+    "username": "jane_doe",
+    "password": "password123",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "role": "USER"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
