@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.4.0...v1.4.1) (2026-03-02)
+
+### 🧹 Chores
+
+* adjust pr pipeline ([e0c5a7a](https://github.com/armandwipangestu/nestjs-boilerplate/commit/e0c5a7a4fa2744d6d32a892ec68096010ed731c8))
+
 ## [1.4.0](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.3.0...v1.4.0) (2026-03-02)
 
 ### ✨ Features
