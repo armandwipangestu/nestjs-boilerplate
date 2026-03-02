@@ -39,8 +39,71 @@ async function main() {
     console.log('🗑️  Clearing existing data...');
     await prisma.refreshToken.deleteMany();
     await prisma.post.deleteMany();
+    await prisma.userPermission.deleteMany();
+    await prisma.userRole.deleteMany();
+    await prisma.rolePermission.deleteMany();
+    await prisma.permission.deleteMany();
+    await prisma.role.deleteMany();
     await prisma.user.deleteMany();
     console.log('✓ Data cleared\n');
+
+    // Seed Roles and Permissions
+    console.log('🛡️  Seeding roles and permissions...');
+
+    const roles = ['ADMIN', 'MODERATOR', 'USER'];
+    const permissions = [
+      'index-user',
+      'show-user',
+      'store-user',
+      'update-user',
+      'destroy-user',
+      'index-post',
+      'show-post',
+      'store-post',
+      'update-post',
+      'destroy-post',
+    ];
+
+    const createdRoles = await Promise.all(
+      roles.map((name) => prisma.role.create({ data: { name } })),
+    );
+
+    const createdPermissions = await Promise.all(
+      permissions.map((name) => prisma.permission.create({ data: { name } })),
+    );
+
+    const adminRole = createdRoles.find((r) => r.name === 'ADMIN')!;
+    const moderatorRole = createdRoles.find((r) => r.name === 'MODERATOR')!;
+    const userRole = createdRoles.find((r) => r.name === 'USER')!;
+
+    // Assign all permissions to ADMIN
+    await Promise.all(
+      createdPermissions.map((permission) =>
+        prisma.rolePermission.create({
+          data: {
+            roleId: adminRole.id,
+            permissionId: permission.id,
+          },
+        }),
+      ),
+    );
+
+    // Assign post permissions to MODERATOR
+    const postPermissions = createdPermissions.filter((p) =>
+      p.name.includes('post'),
+    );
+    await Promise.all(
+      postPermissions.map((permission) =>
+        prisma.rolePermission.create({
+          data: {
+            roleId: moderatorRole.id,
+            permissionId: permission.id,
+          },
+        }),
+      ),
+    );
+
+    console.log('✓ Roles and permissions seeded\n');
 
     const users: User[] = [];
     const posts: Post[] = [];
@@ -49,23 +112,58 @@ async function main() {
     // Seed Users
     console.log('👥 Seeding users...');
 
+    // Create 1 fixed super admin
+    console.log('👑 Creating fixed super admin...');
+
+    const fixedAdminEmail = 'admin@example.com';
+    const fixedAdminPasswordPlain = 'Admin123!';
+    const fixedAdminPassword = await bcrypt.hash(fixedAdminPasswordPlain, 10);
+
+    const fixedAdmin = await prisma.user.create({
+      data: {
+        email: fixedAdminEmail,
+        username: 'superadmin',
+        password: fixedAdminPassword,
+        firstName: 'Super',
+        lastName: 'Admin',
+        isActive: true,
+        roles: {
+          create: {
+            roleId: adminRole.id,
+          },
+        },
+      },
+    });
+
+    users.push(fixedAdmin);
+
+    console.log(`  ✓ Fixed admin created: ${fixedAdmin.email}`);
+    console.log(`  🔐 Login with:`);
+    console.log(`     Email:    ${fixedAdminEmail}`);
+    console.log(`     Password: ${fixedAdminPasswordPlain}`);
+    console.log();
+
     // Create 3 realistic users as admin
     console.log('👑 Creating admin users...');
     const adminPassword = await bcrypt.hash('admin123', 10);
     for (let i = 0; i < 3; i++) {
-      const user = await prisma.user.create({
+       const user = await prisma.user.create({
         data: {
           email: faker.internet.email(),
           username: faker.internet.username().toLowerCase(),
           password: adminPassword,
           firstName: faker.person.firstName(),
           lastName: faker.person.lastName(),
-          role: Role.ADMIN,
           isActive: true,
+          roles: {
+            create: {
+              roleId: adminRole.id,
+            },
+          },
         },
       });
       users.push(user);
-      console.log(`  ✓ Created admin user: ${user.email} (${user.role})`);
+      console.log(`  ✓ Created admin user: ${user.email}`);
     }
     console.log();
 
@@ -80,12 +178,16 @@ async function main() {
           password: moderatorPassword,
           firstName: faker.person.firstName(),
           lastName: faker.person.lastName(),
-          role: Role.MODERATOR,
           isActive: true,
+          roles: {
+            create: {
+              roleId: moderatorRole.id,
+            },
+          },
         },
       });
       users.push(user);
-      console.log(`  ✓ Created moderator user: ${user.email} (${user.role})`);
+      console.log(`  ✓ Created moderator user: ${user.email}`);
     }
     console.log();
 
@@ -100,12 +202,16 @@ async function main() {
           password: userPassword,
           firstName: faker.person.firstName(),
           lastName: faker.person.lastName(),
-          role: Role.USER,
           isActive: true,
+          roles: {
+            create: {
+              roleId: userRole.id,
+            },
+          },
         },
       });
       users.push(user);
-      console.log(`  ✓ Created user: ${user.email} (${user.role})`);
+      console.log(`  ✓ Created user: ${user.email}`);
     }
     console.log();
 
@@ -143,7 +249,6 @@ async function main() {
         const refreshTokenValue = await jwtRefreshService.signAsync({
           sub: user.id,
           email: user.email,
-          role: user.role,
           type: 'refresh',
         })
 
@@ -176,6 +281,8 @@ async function main() {
     console.log(`  • Users:          ${users.length}`);
     console.log(`  • Posts:          ${posts.length}`);
     console.log(`  • Refresh Tokens: ${refreshTokens.length}`);
+    console.log(`  • Roles:          ${createdRoles.length}`);
+    console.log(`  • Permissions:    ${createdPermissions.length}`);
     console.log();
   } catch (error) {
     console.error('❌ Error seeding database:', error);

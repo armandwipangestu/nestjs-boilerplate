@@ -27,7 +27,10 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostQueryDto } from './dto/post-query.dto';
 import { PostListResponseDto, PostResponseDto } from './dto/post-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
+import { AclGuard } from '../auth/guards/acl.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { PERMISSIONS } from '../auth/constants/acl.constant';
 import type { JwtPayload } from '../auth/interfaces/auth.interface';
 
 @ApiTags('Posts')
@@ -77,7 +80,7 @@ export class PostController {
     @Query() query: PostQueryDto,
     @CurrentUser() user?: JwtPayload,
   ): Promise<PostListResponseDto> {
-    const isAdmin = user?.role === 'ADMIN';
+    const isAdmin = user?.roles?.includes('ADMIN') ?? false;
     return this.postService.findAll(query, isAdmin);
   }
 
@@ -105,7 +108,8 @@ export class PostController {
   @ApiResponse({ status: 400, description: 'Validation failed' })
   @ApiResponse({ status: 401, description: 'Unauthorized – JWT required' })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.STORE_POST)
   @Post()
   async create(
     @Body() dto: CreatePostDto,
@@ -114,16 +118,9 @@ export class PostController {
     return this.postService.create(dto, user.sub);
   }
 
-  @ApiOperation({
-    summary: 'Update a post',
-    description: 'Only the post author or an ADMIN can update a post.',
-  })
-  @ApiParam({ name: 'id', description: 'Post ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Post updated successfully',
-    type: PostResponseDto,
-  })
+  @ApiOperation({ summary: 'Update post' })
+  @ApiParam({ name: 'id' })
+  @ApiResponse({ status: 200, type: PostResponseDto })
   @ApiResponse({ status: 400, description: 'Validation failed' })
   @ApiResponse({ status: 401, description: 'Unauthorized – JWT required' })
   @ApiResponse({
@@ -132,22 +129,20 @@ export class PostController {
   })
   @ApiResponse({ status: 404, description: 'Post not found' })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.UPDATE_POST)
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() dto: UpdatePostDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<PostResponseDto> {
-    return this.postService.update(id, dto, user.sub, user.role);
+    return this.postService.update(id, dto, user.sub, user.roles);
   }
 
-  @ApiOperation({
-    summary: 'Delete a post',
-    description: 'Only the post author or an ADMIN can delete a post.',
-  })
-  @ApiParam({ name: 'id', description: 'Post ID' })
-  @ApiResponse({ status: 200, description: 'Post deleted successfully' })
+  @ApiOperation({ summary: 'Delete post' })
+  @ApiParam({ name: 'id' })
+  @ApiResponse({ status: 200 })
   @ApiResponse({ status: 401, description: 'Unauthorized – JWT required' })
   @ApiResponse({
     status: 403,
@@ -155,13 +150,14 @@ export class PostController {
   })
   @ApiResponse({ status: 404, description: 'Post not found' })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.DESTROY_POST)
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async remove(
     @Param('id') id: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<{ message: string }> {
-    return this.postService.remove(id, user.sub, user.role);
+    return this.postService.remove(id, user.sub, user.roles);
   }
 }

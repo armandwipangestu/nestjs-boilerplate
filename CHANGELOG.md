@@ -1,3 +1,22 @@
+## [1.4.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.3.0...v1.4.0-rc.1) (2026-03-02)
+
+### ✨ Features
+
+* **user:** add crud user endpoint with avatar upload ([c0d56e6](https://github.com/armandwipangestu/nestjs-boilerplate/commit/c0d56e63754ebe3ca636f6a4b7c4006fe20dcd11))
+
+### 🧹 Chores
+
+* add minio as s3 in docker-compose.yml ([55a8a76](https://github.com/armandwipangestu/nestjs-boilerplate/commit/55a8a76eccf87b78131683dc50629ea9dd794b2c))
+* rename file name role guard to acl guard ([dcb0464](https://github.com/armandwipangestu/nestjs-boilerplate/commit/dcb04640bbd11f3f7d88b51a72bcd37cc81b16d8))
+* update readme ([bc25d1c](https://github.com/armandwipangestu/nestjs-boilerplate/commit/bc25d1c5b7aafa911c56e7acafe37cd7802eae28))
+* update readme ([5ec44c4](https://github.com/armandwipangestu/nestjs-boilerplate/commit/5ec44c475d2d32d0ef203c87ab3ffb551325985e))
+
+### ♻️ Refactor
+
+* add logger max size and max files via env instead of hardcoded in service ([79106f9](https://github.com/armandwipangestu/nestjs-boilerplate/commit/79106f97dcddaf19c4fc63ba679453af807d5c30))
+* **rbac:** move to modern rbac logic ([61f6418](https://github.com/armandwipangestu/nestjs-boilerplate/commit/61f6418fed422720c028ff4bf487fdd5b58d5eee))
+* **rbac:** remove role checking, as used permissions as single source of truth ([3e21d6c](https://github.com/armandwipangestu/nestjs-boilerplate/commit/3e21d6c5e1234651947a9234d3b45afcdb70d405))
+
 ## [1.3.0](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.2.0...v1.3.0) (2026-02-27)
 
 ### ✨ Features

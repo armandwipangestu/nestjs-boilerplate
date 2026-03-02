@@ -9,6 +9,7 @@
 ![Docker](https://img.shields.io/badge/-Docker-131821?style=for-the-badge&logo=docker)&nbsp;
 ![Redis](https://img.shields.io/badge/-Redis-131821?style=for-the-badge&logo=redis)&nbsp;
 ![Swagger](https://img.shields.io/badge/-Swagger-131821?style=for-the-badge&logo=swagger)&nbsp;
+![S3](https://img.shields.io/badge/-S3-131821?style=for-the-badge&logo=minio)&nbsp;
 
 </div>
 
@@ -102,6 +103,7 @@ docker-compose up -d
 - [ ✅ ] Global Validation Pipe
 - [ ✅ ] CI/CD Github Actions
 - [ ✅ ] Semantic Versioning & Conventional Commits
+- [ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
 - [ ] Unit & E2E Tests coverage
 
 ## License

@@ -1,0 +1,31 @@
+meta {
+  name: Update User
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/users/{{user_id}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "firstName": "Jane Updated",
+    "isActive": true
+  }
+}
+
+vars:pre-request {
+  ~user_id: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

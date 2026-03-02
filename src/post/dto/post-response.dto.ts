@@ -1,5 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationMetaDto } from '../../common/dto/pagination.dto';
 
 export class PostAuthorDto {
   @ApiProperty({ example: 'clw1234567890' })
@@ -52,29 +53,6 @@ export class PostResponseDto {
   @ApiProperty({ example: '2024-01-16T10:00:00.000Z' })
   @Expose()
   updatedAt: Date;
-}
-
-export class PaginationMetaDto {
-  @ApiProperty({ example: 1, description: 'Current page' })
-  page: number;
-
-  @ApiProperty({ example: 10, description: 'Items per page' })
-  limit: number;
-
-  @ApiProperty({ example: 42, description: 'Total number of items' })
-  total: number;
-
-  @ApiProperty({ example: 5, description: 'Total number of pages' })
-  totalPages: number;
-
-  @ApiProperty({ example: true, description: 'Whether there is a next page' })
-  hasNextPage: boolean;
-
-  @ApiProperty({
-    example: false,
-    description: 'Whether there is a previous page',
-  })
-  hasPrevPage: boolean;
 }
 
 export class PostListResponseDto {
