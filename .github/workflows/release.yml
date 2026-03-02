@@ -134,7 +134,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download version.txt artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: release-version
         continue-on-error: true # Prevents crash if no release happened
@@ -152,7 +152,7 @@ jobs:
 
       - name: Download sha.txt artifact
         if: steps.check-version.outputs.RELEASE_EXISTS == 'true'
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: built-sha
 
