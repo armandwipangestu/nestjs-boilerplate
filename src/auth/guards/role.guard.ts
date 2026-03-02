@@ -7,21 +7,28 @@ import {
 import { Reflector } from '@nestjs/core';
 import { CustomLoggerService } from '../../common/logger/logger.service';
 import { RequestWithUser } from '../interfaces/auth.interface';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class AclGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private logger: CustomLoggerService,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.get<string[]>(
-      'roles',
-      context.getHandler(),
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
     );
 
-    if (!requiredRoles) {
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
+      PERMISSIONS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    if (!requiredRoles && !requiredPermissions) {
       return true;
     }
 
@@ -29,24 +36,47 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
 
     if (!user) {
-      this.logger.error(`User not found`, '', 'RolesGuard.canActivate');
+      this.logger.error(`User not found`, '', 'AclGuard.canActivate');
       throw new ForbiddenException('User not found');
     }
 
-    if (!requiredRoles.includes(user.role)) {
+    const isSuperAdmin = user.roles?.includes('ADMIN');
+    if (isSuperAdmin) {
+      this.logger.debug(
+        `Super Admin bypass granted for: ${user.email}`,
+        'AclGuard',
+      );
+      return true;
+    }
+
+    const roleMatch = requiredRoles
+      ? requiredRoles.some((role) => user.roles?.includes(role))
+      : true;
+
+    const permissionMatch = requiredPermissions
+      ? requiredPermissions.every((permission) =>
+          user.permissions?.includes(permission),
+        )
+      : true;
+
+    if (!roleMatch || !permissionMatch) {
+      const issues: string[] = [];
+      if (!roleMatch && requiredRoles) issues.push(`roles [${requiredRoles.join(', ')}]`);
+      if (!permissionMatch && requiredPermissions) issues.push(`permissions [${requiredPermissions.join(', ')}]`);
+
       this.logger.error(
-        `User role ${user.role} is not authorized to access this resource`,
+        `Access denied. User ${user.email} missing: ${issues.join(' and ')}`,
         '',
-        'RolesGuard.canActivate',
+        'AclGuard',
       );
       throw new ForbiddenException(
-        `User role ${user.role} is not authorized to access this resource`,
+        `You do not have the required ${issues.join(' and ')} to access this resource`,
       );
     }
 
     this.logger.log(
-      `User role ${user.role} is authorized to access this resource`,
-      'RolesGuard.canActivate',
+      `Access granted for ${user.email} based on permissions [${user.permissions?.join(', ')}]`,
+      'AclGuard',
     );
     return true;
   }

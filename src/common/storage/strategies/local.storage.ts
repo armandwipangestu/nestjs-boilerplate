@@ -24,20 +24,20 @@ export class LocalStorageProvider implements StorageProvider {
     const key = `${folder}/${fileName}`;
 
     const dir = path.join(this.uploadPath, folder);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    await fs.promises.mkdir(dir, { recursive: true });
 
     const filePath = path.join(dir, fileName);
-    fs.writeFileSync(filePath, file.buffer);
+    await fs.promises.writeFile(filePath, file.buffer);
 
     return key;
   }
 
   async delete(key: string): Promise<void> {
     const filePath = path.join(this.uploadPath, key);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    try {
+      await fs.promises.unlink(filePath);
+    } catch {
+      // Ignore if file doesn't exist
     }
   }
 

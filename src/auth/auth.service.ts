@@ -7,13 +7,15 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { CustomLoggerService } from '../common/logger/logger.service';
-import { RefreshToken, User } from '@prisma/client';
+import { RefreshToken } from '@prisma/client';
 import ms from 'ms';
 import { AppConfigService } from '../config/app-config.service';
 import type {
   AuthUser,
   JwtPayload,
   LoginResponse,
+  UserWithAclRelations,
+  UserWithAcl,
 } from './interfaces/auth.interface';
 import { RegisterDto } from './dto/register.dto';
 
@@ -26,10 +28,8 @@ export class AuthService {
     private appConfig: AppConfigService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
+  async validateUser(email: string, password: string): Promise<UserWithAcl> {
+    const user = await this.getUserWithAclByEmail(email);
 
     if (!user) {
       this.logger.warn(
@@ -51,7 +51,86 @@ export class AuthService {
     }
 
     this.logger.log(`User logged in: ${email}`, 'Auth');
+
     return user;
+  }
+
+  async getUserWithAclByEmail(email: string): Promise<UserWithAcl | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    });
+
+    if (!user) return null;
+
+    return this.mapUserAcl(user);
+  }
+
+  async getUserWithAclById(id: string): Promise<UserWithAcl | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    });
+
+    if (!user) return null;
+
+    return this.mapUserAcl(user);
+  }
+
+  private mapUserAcl(user: UserWithAclRelations): UserWithAcl {
+    const roles = user.roles.map((ur) => ur.role.name);
+    const rolePermissions = user.roles.flatMap((ur) =>
+      ur.role.permissions.map((rp) => rp.permission.name),
+    );
+    const directPermissions = user.permissions.map((up) => up.permission.name);
+
+    const permissions = [
+      ...new Set([...rolePermissions, ...directPermissions]),
+    ];
+
+    return {
+      ...user,
+      roles,
+      permissions,
+    };
   }
 
   async login(user: AuthUser): Promise<LoginResponse> {
@@ -59,7 +138,8 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       username: user.username,
-      role: user.role,
+      roles: user.roles,
+      permissions: user.permissions,
     };
 
     const accessToken = this.jwtService.sign(payload, {
@@ -90,20 +170,15 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        role: user.role,
-      },
+      user,
     };
   }
 
   async refreshAccessToken(
-    refreshToken: string,
+    refreshTokenValue: string,
   ): Promise<{ accessToken: string }> {
     try {
-      const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
+      const payload = this.jwtService.verify<JwtPayload>(refreshTokenValue, {
         secret: this.appConfig.jwt.refreshSecret,
       });
 
@@ -118,7 +193,10 @@ export class AuthService {
       let matchedToken: RefreshToken | null = null;
 
       for (const tokenRecord of storedTokens) {
-        const isMatch = await bcrypt.compare(refreshToken, tokenRecord.token);
+        const isMatch = await bcrypt.compare(
+          refreshTokenValue,
+          tokenRecord.token,
+        );
         if (isMatch) {
           matchedToken = tokenRecord;
           break;
@@ -129,11 +207,7 @@ export class AuthService {
         throw new UnauthorizedException('Refresh token expired or invalid');
       }
 
-      const user = await this.prisma.user.findUnique({
-        where: {
-          id: payload.sub,
-        },
-      });
+      const user = await this.getUserWithAclById(payload.sub);
 
       if (!user || !user.isActive) {
         throw new UnauthorizedException('User not found or inactive');
@@ -143,7 +217,8 @@ export class AuthService {
         sub: user.id,
         email: user.email,
         username: user.username,
-        role: user.role,
+        roles: user.roles,
+        permissions: user.permissions,
       };
 
       const newAccessToken = this.jwtService.sign(newPayload, {
@@ -201,16 +276,48 @@ export class AuthService {
         password: hashedPassword,
         firstName,
         lastName,
+        roles: {
+          create: {
+            role: {
+              connect: {
+                name: 'USER',
+              },
+            },
+          },
+        },
+      },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
       },
     });
 
     this.logger.log(`User registered: ${email}`, 'Auth');
 
+    const mappedUser = this.mapUserAcl(user);
+
     return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
+      id: mappedUser.id,
+      email: mappedUser.email,
+      username: mappedUser.username,
+      roles: mappedUser.roles,
+      permissions: mappedUser.permissions,
     };
   }
 }

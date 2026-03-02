@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { Role } from '@prisma/client';
 
 export class UserResponseDto {
   @ApiProperty()
@@ -23,9 +22,13 @@ export class UserResponseDto {
   @Expose()
   lastName: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: [String], example: ['USER'] })
   @Expose()
-  role: Role;
+  roles: string[];
+
+  @ApiProperty({ type: [String], example: ['index-user'] })
+  @Expose()
+  permissions: string[];
 
   @ApiProperty()
   @Expose()

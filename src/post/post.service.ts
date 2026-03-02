@@ -210,7 +210,7 @@ export class PostService {
     id: string,
     dto: UpdatePostDto,
     userId: string,
-    userRole: string,
+    userRoles: string[],
   ): Promise<PostResponseDto> {
     const existing = await this.prisma.post.findUnique({ where: { id } });
 
@@ -218,7 +218,7 @@ export class PostService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
 
-    if (existing.authorId !== userId && userRole !== 'ADMIN') {
+    if (existing.authorId !== userId && !userRoles.includes('ADMIN')) {
       this.logger.warn(
         `Unauthorized update attempt on post ${id} by user ${userId}`,
         'PostService',
@@ -251,7 +251,7 @@ export class PostService {
   async remove(
     id: string,
     userId: string,
-    userRole: string,
+    userRoles: string[],
   ): Promise<{ message: string }> {
     const existing = await this.prisma.post.findUnique({ where: { id } });
 
@@ -259,7 +259,7 @@ export class PostService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
 
-    if (existing.authorId !== userId && userRole !== 'ADMIN') {
+    if (existing.authorId !== userId && !userRoles.includes('ADMIN')) {
       this.logger.warn(
         `Unauthorized delete attempt on post ${id} by user ${userId}`,
         'PostService',

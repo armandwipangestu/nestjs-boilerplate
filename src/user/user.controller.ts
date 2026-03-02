@@ -33,9 +33,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { UserResponseDto, UserListResponseDto } from './dto/user-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
-import { RolesGuard } from '../auth/guards/role.guard';
+import { AclGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { ROLES, PERMISSIONS } from '../auth/constants/acl.constant';
 
 @ApiTags('Users')
 @Controller('users')
@@ -46,8 +47,8 @@ export class UserController {
   @ApiOperation({ summary: 'List all users' })
   @ApiResponse({ status: 200, type: UserListResponseDto })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.INDEX_USER)
   @Get()
   async findAll(@Query() query: UserQueryDto): Promise<UserListResponseDto> {
     return this.userService.findAll(query);
@@ -57,7 +58,8 @@ export class UserController {
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: 200, type: UserResponseDto })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.SHOW_USER)
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<UserResponseDto> {
     return this.userService.findOne(id);
@@ -66,8 +68,8 @@ export class UserController {
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, type: UserResponseDto })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.STORE_USER)
   @Post()
   async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.create(dto);
@@ -77,7 +79,8 @@ export class UserController {
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: 200, type: UserResponseDto })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.UPDATE_USER)
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -90,8 +93,8 @@ export class UserController {
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: 200 })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, AclGuard)
+  @Permissions(PERMISSIONS.DESTROY_USER)
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string): Promise<{ message: string }> {

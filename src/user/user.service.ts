@@ -15,7 +15,11 @@ import { PaginationMetaDto } from '../common/dto/pagination.dto';
 import { plainToInstance } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
-import { Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import {
+  UserWithAcl,
+  UserWithAclRelations,
+} from '../auth/interfaces/auth.interface';
 
 const USER_CACHE_PREFIX = 'users';
 
@@ -47,14 +51,34 @@ export class UserService {
     this.logger.debug(`Cache invalidated for user: ${userId}`, 'UserService');
   }
 
-  private toUserResponseDto(user: User): UserResponseDto {
-    const result = plainToInstance(UserResponseDto, user, {
+  private toUserResponseDto(user: UserWithAclRelations): UserResponseDto {
+    const mappedUser = this.mapUserAcl(user);
+    const result = plainToInstance(UserResponseDto, mappedUser, {
       excludeExtraneousValues: true,
     });
     if (result.avatarUrl) {
       result.avatarUrl = this.storage.getUrl(result.avatarUrl);
     }
     return result;
+  }
+
+  private mapUserAcl(user: UserWithAclRelations): UserWithAcl {
+    const roles = user.roles.map((ur) => ur.role.name);
+    const rolePermissions = user.roles.flatMap(
+      (ur) => ur.role.permissions?.map((rp) => rp.permission.name) || [],
+    );
+    const directPermissions =
+      user.permissions?.map((up) => up.permission.name) || [];
+
+    const permissions = [
+      ...new Set([...rolePermissions, ...directPermissions]),
+    ];
+
+    return {
+      ...user,
+      roles,
+      permissions,
+    };
   }
 
   async findAll(query: UserQueryDto): Promise<UserListResponseDto> {
@@ -80,15 +104,35 @@ export class UserService {
       ...(isActive !== undefined && { isActive }),
     };
 
-    const [users, total] = await Promise.all([
+    const [users, total] = (await Promise.all([
       this.prisma.user.findMany({
         where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        include: {
+          roles: {
+            include: {
+              role: {
+                include: {
+                  permissions: {
+                    include: {
+                      permission: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          permissions: {
+            include: {
+              permission: true,
+            },
+          },
+        },
       }),
       this.prisma.user.count({ where }),
-    ]);
+    ])) as [UserWithAclRelations[], number];
 
     const totalPages = Math.ceil(total / limit);
     const meta: PaginationMetaDto = {
@@ -117,7 +161,30 @@ export class UserService {
       return cached;
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = (await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    })) as UserWithAclRelations | null;
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -128,6 +195,8 @@ export class UserService {
   }
 
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
+    const { roles, ...userData } = dto;
+
     const existing = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: dto.email }, { username: dto.username }],
@@ -142,12 +211,47 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    const user = await this.prisma.user.create({
+    const user = (await this.prisma.user.create({
       data: {
-        ...dto,
+        ...userData,
         password: hashedPassword,
+        roles: roles?.length
+          ? {
+              create: roles.map((roleName) => ({
+                role: {
+                  connect: { name: roleName },
+                },
+              })),
+            }
+          : {
+              create: {
+                role: {
+                  connect: { name: 'USER' },
+                },
+              },
+            },
       },
-    });
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    })) as UserWithAclRelations;
 
     this.logger.log(`User created: ${user.id}`, 'UserService');
     await this.cacheService.reset();
@@ -160,14 +264,49 @@ export class UserService {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
-    if (dto.password) {
-      dto.password = await bcrypt.hash(dto.password, 10);
-    }
+    const { roles, ...updateData } = dto;
 
-    const updated = await this.prisma.user.update({
+    const password = updateData.password
+      ? await bcrypt.hash(updateData.password, 10)
+      : undefined;
+
+    const updated = (await this.prisma.user.update({
       where: { id },
-      data: dto as Prisma.UserUpdateInput,
-    });
+      data: {
+        ...(updateData as any),
+        ...(password && { password }),
+        ...(roles && {
+          roles: {
+            deleteMany: {},
+            create: roles.map((roleName) => ({
+              role: {
+                connect: { name: roleName },
+              },
+            })),
+          },
+        }),
+      } as Prisma.UserUpdateInput,
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    })) as UserWithAclRelations;
 
     this.logger.log(`User updated: ${id}`, 'UserService');
     await this.invalidateUserCache(id);
@@ -206,10 +345,30 @@ export class UserService {
 
     const avatarUrl = await this.storage.upload(file);
 
-    const updated = await this.prisma.user.update({
+    const updated = (await this.prisma.user.update({
       where: { id },
       data: { avatarUrl },
-    });
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    })) as UserWithAclRelations;
 
     this.logger.log(`Avatar uploaded for user: ${id}`, 'UserService');
     await this.invalidateUserCache(id);

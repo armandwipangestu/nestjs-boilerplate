@@ -1,5 +1,4 @@
 import { Expose, Type } from 'class-transformer';
-import { Role } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthUserResponseDto {
@@ -24,9 +23,21 @@ export class AuthUserResponseDto {
   @Expose()
   username: string;
 
-  @ApiProperty({ enum: Role, description: 'The role of the user' })
+  @ApiProperty({
+    example: ['ADMIN'],
+    description: 'The roles of the user',
+    type: [String],
+  })
   @Expose()
-  role: Role;
+  roles: string[];
+
+  @ApiProperty({
+    example: ['index-user'],
+    description: 'The permissions of the user',
+    type: [String],
+  })
+  @Expose()
+  permissions: string[];
 }
 
 export class AuthResponseDto {
@@ -34,7 +45,10 @@ export class AuthResponseDto {
   @Expose()
   accessToken: string;
 
-  @ApiProperty({ type: AuthUserResponseDto, description: 'The user information' })
+  @ApiProperty({
+    type: AuthUserResponseDto,
+    description: 'The user information',
+  })
   @Expose()
   @Type(() => AuthUserResponseDto)
   user: AuthUserResponseDto;

@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/users?page=1&limit=10&isActive=true
+  url: {{host}}/users?page=1&limit=20&isActive=true
   body: none
   auth: inherit
 }
 
 params:query {
   page: 1
-  limit: 10
+  limit: 20
   isActive: true
   ~search: 
 }

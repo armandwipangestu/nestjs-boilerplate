@@ -49,7 +49,9 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'User already exists' })
   @Post('register')
-  async register(@Body() registerDto: RegisterDto): Promise<AuthUserResponseDto> {
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<AuthUserResponseDto> {
     const user = await this.authService.register(registerDto);
     return plainToInstance(AuthUserResponseDto, user, {
       excludeExtraneousValues: true,
