@@ -14,6 +14,7 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    environment: ${{ github.base_ref }}
 
     steps:
       - name: Checkout repository
@@ -55,7 +56,7 @@ jobs:
 
       - name: Validate Semantic Release (Dry Run)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN  }}
           NPM_TOKEN: false
           DEBUG: "semantic-release:*"
         run: npx semantic-release --dry-run
