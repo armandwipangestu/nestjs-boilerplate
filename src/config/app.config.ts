@@ -20,6 +20,11 @@ export interface AppConfig {
   logging: {
     level: string;
     dir: string;
+    appLogMaxSize: string;
+    appLogMaxFiles: string;
+    errorLogMaxSize: string;
+    errorLogMaxFiles: string;
+    testMode: boolean;
   };
 
   env: {
@@ -67,6 +72,11 @@ export default registerAs('app', () => ({
   logging: {
     level: process.env.LOG_LEVEL ?? 'info',
     dir: process.env.LOG_DIR ?? './logs',
+    appLogMaxSize: process.env.LOG_APP_MAX_SIZE ?? '20m',
+    appLogMaxFiles: process.env.LOG_APP_MAX_FILES ?? '14d',
+    errorLogMaxSize: process.env.LOG_ERROR_MAX_SIZE ?? '20m',
+    errorLogMaxFiles: process.env.LOG_ERROR_MAX_FILES ?? '30d',
+    testMode: process.env.LOG_TEST_MODE === 'true',
   },
   env: {
     nodeEnv: process.env.NODE_ENV ?? 'development',
