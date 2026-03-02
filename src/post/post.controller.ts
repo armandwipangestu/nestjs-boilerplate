@@ -27,7 +27,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostQueryDto } from './dto/post-query.dto';
 import { PostListResponseDto, PostResponseDto } from './dto/post-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
-import { AclGuard } from '../auth/guards/role.guard';
+import { AclGuard } from '../auth/guards/acl.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { PERMISSIONS } from '../auth/constants/acl.constant';

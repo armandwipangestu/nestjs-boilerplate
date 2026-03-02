@@ -33,7 +33,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { UserResponseDto, UserListResponseDto } from './dto/user-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
-import { AclGuard } from '../auth/guards/role.guard';
+import { AclGuard } from '../auth/guards/acl.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { ROLES, PERMISSIONS } from '../auth/constants/acl.constant';
