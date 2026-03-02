@@ -14,7 +14,6 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref }}
 
     steps:
       - name: Checkout repository
@@ -59,4 +58,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           NPM_TOKEN: false
           DEBUG: "semantic-release:*"
-        run: npx semantic-release --dry-run --branches=${{ github.head_ref }}
+        run: npx semantic-release --dry-run
