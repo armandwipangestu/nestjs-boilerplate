@@ -103,6 +103,7 @@ docker-compose up -d
 - [ ✅ ] Global Validation Pipe
 - [ ✅ ] CI/CD Github Actions
 - [ ✅ ] Semantic Versioning & Conventional Commits
+- [ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
 - [ ] Unit & E2E Tests coverage
 
 ## License
