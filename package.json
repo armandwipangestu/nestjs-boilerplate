@@ -46,6 +46,7 @@
     "@opentelemetry/instrumentation-http": "^0.212.0",
     "@opentelemetry/instrumentation-nestjs-core": "^0.58.0",
     "@opentelemetry/instrumentation-redis-4": "^0.49.0",
+    "@opentelemetry/instrumentation-runtime-node": "^0.25.0",
     "@opentelemetry/resources": "^2.5.1",
     "@opentelemetry/sdk-node": "^0.212.0",
     "@opentelemetry/sdk-trace-node": "^2.5.1",

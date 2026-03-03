@@ -44,7 +44,7 @@ A powerful, type-safe NestJS boilerplate designed for scalability and developer 
   - Powered by Bun for fast execution
   - Throttling & Rate Limiting
   - Distributed Tracing with OpenTelemetry
-  - Metrics exposure via Prometheus endpoint (`/metrics`)
+  - Metrics exposure via Prometheus exporter `/metrics` with default port `9464`
   - Log correlation (Trace ID injection into Winston logs)
 
 ## Repo Stats
@@ -106,7 +106,7 @@ docker-compose up -d
 - [ ✅ ] Global Validation Pipe
 - [ ✅ ] CI/CD Github Actions
 - [ ✅ ] Semantic Versioning & Conventional Commits
-- [ ✅ ] Export data metrics using Prometheus exporter
+- [ ✅ ] Export data metrics using Prometheus exporter (Port 9464)
 - [ ✅ ] Distributed tracing integration using OpenTelemetry
 - [ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
 - [ ] Stresss / load test using K6

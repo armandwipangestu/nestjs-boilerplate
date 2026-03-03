@@ -22,7 +22,6 @@ import { StorageModule } from './common/storage/storage.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { ObservabilityModule } from './common/observability/observability.module';
 
 @Module({
   imports: [
@@ -67,7 +66,6 @@ import { ObservabilityModule } from './common/observability/observability.module
     PostModule,
     StorageModule,
     UserModule,
-    ObservabilityModule,
   ],
   controllers: [AppController],
   providers: [
