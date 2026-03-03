@@ -46,7 +46,7 @@ A powerful, type-safe NestJS boilerplate designed for scalability and developer 
 
 ## Repo Stats
 
-![Alt](https://repobeats.axiom.co/api/embed/bacf3559fe13db7c67ff75df6188a697271bdd96.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/bacf3559fe13db7c67ff75df6188a697271bdd96.svg 'Repobeats analytics image')
 
 ## Star History
 
@@ -104,6 +104,9 @@ docker-compose up -d
 - [ ✅ ] CI/CD Github Actions
 - [ ✅ ] Semantic Versioning & Conventional Commits
 - [ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
+- [ ] Export data metrics using promql output to monitor resource app
+- [ ] Distributed tracing integration using OpenTelemetry
+- [ ] Stresss / load test using K6
 - [ ] Unit & E2E Tests coverage
 
 ## License

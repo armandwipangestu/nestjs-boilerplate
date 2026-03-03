@@ -94,11 +94,24 @@ export class PostService {
     const { page = 1, limit = 10, search, published } = query;
     const skip = (page - 1) * limit;
 
+    const isSqlite = this.prisma.config.databaseProvider === 'sqlite';
+    const searchMode = isSqlite ? undefined : 'insensitive';
+
     const where: Prisma.PostWhereInput = {
       ...(search && {
         OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { content: { contains: search, mode: 'insensitive' } },
+          {
+            title: {
+              contains: search,
+              ...(searchMode && { mode: searchMode as any }),
+            },
+          },
+          {
+            content: {
+              contains: search,
+              ...(searchMode && { mode: searchMode as any }),
+            },
+          },
         ],
       }),
       // Non-admins can only see published posts unless explicitly querying

@@ -92,13 +92,36 @@ export class UserService {
     const { page = 1, limit = 10, search, isActive } = query;
     const skip = (page - 1) * limit;
 
+    const isSqlite = this.prisma.config.databaseProvider === 'sqlite';
+    const searchMode = isSqlite ? undefined : 'insensitive';
+
     const where: Prisma.UserWhereInput = {
       ...(search && {
         OR: [
-          { username: { contains: search, mode: 'insensitive' } },
-          { email: { contains: search, mode: 'insensitive' } },
-          { firstName: { contains: search, mode: 'insensitive' } },
-          { lastName: { contains: search, mode: 'insensitive' } },
+          {
+            username: {
+              contains: search,
+              ...(searchMode && { mode: searchMode as any }),
+            },
+          },
+          {
+            email: {
+              contains: search,
+              ...(searchMode && { mode: searchMode as any }),
+            },
+          },
+          {
+            firstName: {
+              contains: search,
+              ...(searchMode && { mode: searchMode as any }),
+            },
+          },
+          {
+            lastName: {
+              contains: search,
+              ...(searchMode && { mode: searchMode as any }),
+            },
+          },
         ],
       }),
       ...(isActive !== undefined && { isActive }),

@@ -14,6 +14,7 @@ services:
         condition: service_started
     volumes:
       - ./docker-data/nestjs-boilerplate/logs:/app/logs
+      - ./docker-data/sqlite:/app/prisma/db # For SQLite persistence
     logging:
       driver: "json-file"
       options:
@@ -58,6 +59,25 @@ services:
     depends_on:
       db-nestjs-boilerplate:
         condition: service_healthy
+
+  # Uncomment below to use MySQL instead of PostgreSQL
+  # db-mysql-nestjs-boilerplate:
+  #   image: mysql:8.0
+  #   container_name: db-mysql-nestjs-boilerplate
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: nestjs_boilerplate
+  #     MYSQL_USER: user
+  #     MYSQL_PASSWORD: password
+  #   ports:
+  #     - "3307:3306"
+  #   volumes:
+  #     - ./docker-data/mysql:/var/lib/mysql
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+  #     timeout: 20s
+  #     retries: 10
 
   redis-nestjs-boilerplate:
     image: redis:7.4-alpine

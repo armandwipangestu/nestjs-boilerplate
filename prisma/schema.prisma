@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model User {
@@ -82,7 +82,7 @@ model UserPermission {
 model Post {
   id        String   @id @default(cuid())
   title     String
-  content   String   @db.Text
+  content   String   
   published Boolean  @default(false)
   authorId  String   @map("author_id")
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)

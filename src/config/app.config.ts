@@ -2,6 +2,7 @@ import { registerAs } from '@nestjs/config';
 import { StringValue } from 'ms';
 
 export interface AppConfig {
+  databaseProvider: 'postgresql' | 'mysql' | 'sqlite';
   databaseUrl: string;
 
   jwt: {
@@ -56,6 +57,10 @@ export interface AppConfig {
 }
 
 export default registerAs('app', () => ({
+  databaseProvider: (process.env.DATABASE_PROVIDER ?? 'sqlite') as
+    | 'postgresql'
+    | 'mysql'
+    | 'sqlite',
   databaseUrl: process.env.DATABASE_URL,
   jwt: {
     secret: process.env.JWT_SECRET,

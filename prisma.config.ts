@@ -4,10 +4,10 @@ import { defineConfig, env } from 'prisma/config';
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {
-    path: 'prisma/migrations',
+    path: `prisma/migrations/${process.env.DATABASE_PROVIDER || 'sqlite'}`,
     seed: 'bun prisma/seed.ts',
   },
   datasource: {
-    url: process.env.DATABASE_URL ?? 'postgresql://dummy:dummy@localhost:5432/dummy',
+    url: process.env.DATABASE_URL ?? 'file:./dev.db',
   },
 });

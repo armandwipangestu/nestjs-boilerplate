@@ -53,6 +53,12 @@ export class AppConfigService {
     return this.config.getOrThrow<string>('app.databaseUrl');
   }
 
+  get databaseProvider() {
+    return this.config.getOrThrow<AppConfig['databaseProvider']>(
+      'app.databaseProvider',
+    );
+  }
+
   get throttler() {
     return this.config.getOrThrow<AppConfig['throttler']>('app.throttler');
   }
