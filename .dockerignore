@@ -62,3 +62,4 @@ generated/prisma
 prisma/generated
 
 uploads
+*.db

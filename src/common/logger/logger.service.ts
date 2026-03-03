@@ -2,6 +2,7 @@ import { Injectable, LoggerService } from '@nestjs/common';
 import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import * as fs from 'fs';
+import { trace, context as otelContext } from '@opentelemetry/api';
 
 @Injectable()
 export class CustomLoggerService implements LoggerService {
@@ -100,16 +101,23 @@ export class CustomLoggerService implements LoggerService {
     this.logger.level = logLevel;
   }
 
+  private getTraceContext() {
+    const span = trace.getSpan(otelContext.active());
+    if (!span) return {};
+    const { traceId, spanId } = span.spanContext();
+    return { trace_id: traceId, span_id: spanId };
+  }
+
   log(message: string, context?: string, meta?: Record<string, unknown>) {
-    this.logger.info(message, { context, ...meta });
+    this.logger.info(message, { context, ...this.getTraceContext(), ...meta });
   }
 
   debug(message: string, context?: string, meta?: Record<string, unknown>) {
-    this.logger.debug(message, { context, ...meta });
+    this.logger.debug(message, { context, ...this.getTraceContext(), ...meta });
   }
 
   warn(message: string, context?: string, meta?: Record<string, unknown>) {
-    this.logger.warn(message, { context, ...meta });
+    this.logger.warn(message, { context, ...this.getTraceContext(), ...meta });
   }
 
   error(
@@ -118,7 +126,12 @@ export class CustomLoggerService implements LoggerService {
     context?: string,
     meta?: Record<string, unknown>,
   ) {
-    this.logger.error(message, { context, stack, ...meta });
+    this.logger.error(message, {
+      context,
+      stack,
+      ...this.getTraceContext(),
+      ...meta,
+    });
   }
 
   fatal(
@@ -127,10 +140,19 @@ export class CustomLoggerService implements LoggerService {
     context?: string,
     meta?: Record<string, unknown>,
   ) {
-    this.logger.log('fatal', message, { context, stack, ...meta });
+    this.logger.log('fatal', message, {
+      context,
+      stack,
+      ...this.getTraceContext(),
+      ...meta,
+    });
   }
 
   trace(message: string, context?: string, meta?: Record<string, unknown>) {
-    this.logger.log('trace', message, { context, ...meta });
+    this.logger.log('trace', message, {
+      context,
+      ...this.getTraceContext(),
+      ...meta,
+    });
   }
 }

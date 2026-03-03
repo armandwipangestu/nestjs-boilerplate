@@ -40,9 +40,12 @@ A powerful, type-safe NestJS boilerplate designed for scalability and developer 
   - Redis integration for caching/logging
   - Docker & Docker Compose support
   - Custom Logger (Winston) with daily rotation
-- **Performance**
+- **Performance & Observability**
   - Powered by Bun for fast execution
   - Throttling & Rate Limiting
+  - Distributed Tracing with OpenTelemetry
+  - Metrics exposure via Prometheus endpoint (`/metrics`)
+  - Log correlation (Trace ID injection into Winston logs)
 
 ## Repo Stats
 
@@ -103,7 +106,10 @@ docker-compose up -d
 - [ ✅ ] Global Validation Pipe
 - [ ✅ ] CI/CD Github Actions
 - [ ✅ ] Semantic Versioning & Conventional Commits
+- [ ✅ ] Export data metrics using Prometheus exporter
+- [ ✅ ] Distributed tracing integration using OpenTelemetry
 - [ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
+- [ ] Stresss / load test using K6
 - [ ] Unit & E2E Tests coverage
 
 ## License

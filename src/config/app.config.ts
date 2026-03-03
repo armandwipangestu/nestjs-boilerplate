@@ -53,6 +53,13 @@ export interface AppConfig {
     region?: string;
     forcePathStyle?: boolean;
   };
+
+  openTelemetry: {
+    serviceName: string;
+    enableTracing: boolean;
+    enableMetrics: boolean;
+    otlpExporterUrl: string;
+  };
 }
 
 export default registerAs('app', () => ({
@@ -100,5 +107,12 @@ export default registerAs('app', () => ({
     bucket: process.env.S3_BUCKET,
     region: process.env.S3_REGION ?? 'us-east-1',
     forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true',
+  },
+  openTelemetry: {
+    serviceName: process.env.OTEL_SERVICE_NAME ?? 'nestjs-boilerplate',
+    enableTracing: process.env.ENABLE_TRACING === 'true',
+    enableMetrics: process.env.ENABLE_METRICS === 'true',
+    otlpExporterUrl:
+      process.env.OTEL_EXPORTER_OTLP_ENDPOINT ?? 'http://localhost:4318/v1/traces',
   },
 }));
