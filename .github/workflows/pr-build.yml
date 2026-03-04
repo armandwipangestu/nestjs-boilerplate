@@ -53,9 +53,14 @@ jobs:
         env:
           CI: true
 
+      - name: Setup Node.js 25 for Semantic Release
+        uses: actions/setup-node@v6
+        with:
+          node-version: "25"
+
       - name: Validate Semantic Release (Dry Run)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           NPM_TOKEN: false
           DEBUG: "semantic-release:*"
-        run: bunx semantic-release --dry-run
+        run: npx semantic-release --dry-run
