@@ -84,7 +84,10 @@ async function bootstrap() {
   }
 
   const gracefulShutdown = async (signal: string) => {
-    logger.warn(`${signal} received. Starting graceful shutdown...`, 'Bootstrap');
+    logger.warn(
+      `${signal} received. Starting graceful shutdown...`,
+      'Bootstrap',
+    );
 
     const shutdownTimeout = setTimeout(() => {
       logger.error('Force shutdown due to timeout', 'Bootstrap');
@@ -107,13 +110,21 @@ async function bootstrap() {
       logger.log('Shutdown complete', 'Bootstrap');
       process.exit(0);
     } catch (error) {
-      logger.error('Error during shutdown', error as any, 'Bootstrap');
+      logger.error(
+        'Error during shutdown',
+        error instanceof Error ? error.stack : String(error),
+        'Bootstrap',
+      );
       process.exit(1);
     }
   };
 
-  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => {
+    void gracefulShutdown('SIGINT');
+  });
+  process.on('SIGTERM', () => {
+    void gracefulShutdown('SIGTERM');
+  });
 }
 
 bootstrap().catch((err) => {

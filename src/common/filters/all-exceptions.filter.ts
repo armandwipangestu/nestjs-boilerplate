@@ -32,12 +32,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : { message: (exception as Error).message };
 
     // Record Metrics
-    const route = request.route?.path || request.url;
+    const requestWithRoute = request as unknown as {
+      method: string;
+      url: string;
+      route?: { path: string };
+    };
+    const route = requestWithRoute.route?.path || requestWithRoute.url;
     // Normalize route to avoid cardinality explosion
     const normalizedRoute = this.normalizeRoute(route);
 
     this.metricsService.httpErrorsTotal.add(1, {
-      method: request.method,
+      method: requestWithRoute.method,
       route: normalizedRoute,
       status_code: status.toString(),
     });
@@ -45,15 +50,20 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // Logging
     const context = 'ExceptionsHandler';
     const logMeta = {
-      path: request.url,
-      method: request.method,
+      path: requestWithRoute.url,
+      method: requestWithRoute.method,
       status,
       error: exception instanceof Error ? exception.message : 'Unknown error',
       stack: exception instanceof Error ? exception.stack : undefined,
     };
 
     if (status >= 500) {
-      this.logger.error(`Internal server error: ${logMeta.error}`, exception instanceof Error ? exception.stack : undefined, context, logMeta);
+      this.logger.error(
+        `Internal server error: ${logMeta.error}`,
+        exception instanceof Error ? exception.stack : undefined,
+        context,
+        logMeta,
+      );
     } else {
       this.logger.warn(`HTTP exception: ${logMeta.error}`, context, logMeta);
     }
@@ -61,14 +71,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
-      path: request.url,
+      path: requestWithRoute.url,
       ...(typeof message === 'object' ? message : { message }),
     });
   }
 
   private normalizeRoute(route: string): string {
     // Basic normalization: remove query strings
-    let normalized = route.split('?')[0];
+    const normalized = route.split('?')[0];
 
     // In a more complex app, we might want to ensure we lead with NestJS normalized routes
     // But since this is a global filter, we get whatever is available.

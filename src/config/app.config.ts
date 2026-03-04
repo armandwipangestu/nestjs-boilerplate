@@ -114,7 +114,8 @@ export default registerAs('app', () => ({
     enableTracing: process.env.ENABLE_TRACING === 'true',
     enableMetrics: process.env.ENABLE_METRICS === 'true',
     otlpExporterUrl:
-      process.env.OTEL_EXPORTER_OTLP_ENDPOINT ?? 'http://localhost:4318/v1/traces',
+      process.env.OTEL_EXPORTER_OTLP_ENDPOINT ??
+      'http://localhost:4318/v1/traces',
     dbSlowQueryThreshold: parseInt(
       process.env.DB_SLOW_QUERY_THRESHOLD_MS ?? '200',
       10,

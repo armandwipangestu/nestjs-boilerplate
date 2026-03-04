@@ -15,7 +15,10 @@ import {
   SEMRESATTRS_DEPLOYMENT_ENVIRONMENT,
   ATTR_SERVICE_INSTANCE_ID,
 } from '@opentelemetry/semantic-conventions';
-import { ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-node';
+import {
+  ParentBasedSampler,
+  TraceIdRatioBasedSampler,
+} from '@opentelemetry/sdk-trace-node';
 import * as dotenv from 'dotenv';
 import * as os from 'os';
 import * as packageJson from '../package.json';
@@ -26,7 +29,7 @@ dotenv.config();
 const enableTracing = process.env.ENABLE_TRACING === 'true';
 const enableMetrics = process.env.ENABLE_METRICS === 'true';
 
-let sdk: NodeSDK | null = null;
+const sdk: NodeSDK | null = null;
 
 if (enableTracing || enableMetrics) {
   // Configurable sampling
@@ -48,12 +51,15 @@ if (enableTracing || enableMetrics) {
 
   const sdk = new NodeSDK({
     resource: resourceFromAttributes({
-      [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'nestjs-boilerplate',
+      [ATTR_SERVICE_NAME]:
+        process.env.OTEL_SERVICE_NAME || 'nestjs-boilerplate',
       [ATTR_SERVICE_VERSION]: packageJson.version,
-      [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]: process.env.NODE_ENV || 'development',
-      [ATTR_SERVICE_INSTANCE_ID]: process.env.SERVICE_INSTANCE_ID || os.hostname(),
+      [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]:
+        process.env.NODE_ENV || 'development',
+      [ATTR_SERVICE_INSTANCE_ID]:
+        process.env.SERVICE_INSTANCE_ID || os.hostname(),
     }),
-    
+
     // Sampling strategy
     sampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(ratio),
@@ -99,9 +105,7 @@ if (enableTracing || enableMetrics) {
   console.log('OpenTelemetry SDK started successfully');
 
   if (enableTracing) {
-    console.log(
-      `Tracing enabled (sampling: ${percentage}% | ratio: ${ratio})`,
-    );
+    console.log(`Tracing enabled (sampling: ${percentage}% | ratio: ${ratio})`);
   }
 
   if (enableMetrics) {

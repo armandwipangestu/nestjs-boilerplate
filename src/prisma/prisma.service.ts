@@ -5,13 +5,12 @@ import * as pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { MetricsService } from '../common/observability/metrics.service';
 
-
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  private readonly extendedClient: any;
+  private readonly extendedClient: ReturnType<PrismaClient['$extends']>;
 
   constructor(
     private config: AppConfigService,
@@ -68,7 +67,7 @@ export class PrismaService
         }
         return Reflect.get(target, prop, receiver);
       },
-    }) as any;
+    }) as unknown as PrismaService;
   }
 
   async onModuleInit() {
