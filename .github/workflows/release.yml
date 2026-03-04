@@ -96,16 +96,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Setup Node.js 22 for Semantic Release
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: false
-        run: npx semantic-release
+        run: bunx semantic-release
 
       - name: Upload version.txt artifact
         uses: actions/upload-artifact@v6
