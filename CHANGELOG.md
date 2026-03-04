@@ -1,3 +1,40 @@
+## [1.5.0](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.4.2...v1.5.0) (2026-03-04)
+
+### ✨ Features
+
+* **observability:** add opentelemetry integration for traces and metrics ([7a32180](https://github.com/armandwipangestu/nestjs-boilerplate/commit/7a32180056309927914748b16403d6ce750c5c83))
+* **observability:** add setup using opentelemetry, grafana, loki, alloy, tempo, and prometheus ([10c849b](https://github.com/armandwipangestu/nestjs-boilerplate/commit/10c849babd93ede87d77b60ff3aec30be56a5d33))
+* **observability:** add stres test or load test using k6 ([d520be1](https://github.com/armandwipangestu/nestjs-boilerplate/commit/d520be12caddce92f22ec4fa52a9d4a477a14848))
+* **test:** add unit and e2e tests coverage ([f9ec662](https://github.com/armandwipangestu/nestjs-boilerplate/commit/f9ec662a79785fb59c6a178e54558d38520a4111))
+
+### 🐛 Bug Fixes
+
+* **ci:** add prisma generate before run unit tests ([d8373eb](https://github.com/armandwipangestu/nestjs-boilerplate/commit/d8373ebec947fdea7ba0faf4186b0f93b11bc293))
+* **ci:** change from npx to bunx ([b1396f6](https://github.com/armandwipangestu/nestjs-boilerplate/commit/b1396f6aa7639f884e028cceed09d002ad43294c))
+* **ci:** lint ([ab1820d](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ab1820dbfaa7e1573ba2e4278d59b6ca413f57a0))
+* **ci:** remove node_modules from cache ([4afb591](https://github.com/armandwipangestu/nestjs-boilerplate/commit/4afb5913a4c0ae786bdc864581042cf3c6e090ce))
+* **ci:** revert to nodejs 25 and use npx ([ebdf2de](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ebdf2de73b783cec9fa5a8b6b547c215675db9f6))
+
+### 🧹 Chores
+
+* add grafana screenshot ([ae5a67d](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ae5a67dddf8264496f308fd2e0023ca916cc2cc2))
+* disable automatic database seed when container up ([69fffc0](https://github.com/armandwipangestu/nestjs-boilerplate/commit/69fffc077d3a05fdaf1728fb1b42cb5d7cf763b1))
+* **release:** 1.5.0-rc.1 [skip ci] ([33d3588](https://github.com/armandwipangestu/nestjs-boilerplate/commit/33d3588f258dd3c10367a2dabb78c50dac16c862))
+* **release:** 1.5.0-rc.2 [skip ci] ([ed96b31](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ed96b31b54a96c033e574ff82017e45e9c0d9e20))
+* update assets ([be186de](https://github.com/armandwipangestu/nestjs-boilerplate/commit/be186de702e99bb3f5f1404c7d4db57194add83e))
+* update bruno ([fc69839](https://github.com/armandwipangestu/nestjs-boilerplate/commit/fc69839230d59878b7431b0650aca5d26b116ec1))
+* update label ([48753c2](https://github.com/armandwipangestu/nestjs-boilerplate/commit/48753c24224c08f6854a29dd85acfa47912a2276))
+* using ghcr for image ([8db9df2](https://github.com/armandwipangestu/nestjs-boilerplate/commit/8db9df2960c47077451893953a92a32f10b73d9b))
+
+### ♻️ Refactor
+
+* **database:** add warning seed when in production environment ([81f9c9d](https://github.com/armandwipangestu/nestjs-boilerplate/commit/81f9c9da527cc3c954638d7f70b9113e40bb181e))
+* **observability:** add application metrics ([02335f2](https://github.com/armandwipangestu/nestjs-boilerplate/commit/02335f2b96ada847c8c1963ec9c32a31234068c6))
+* **observability:** add database slow query ([8aea84a](https://github.com/armandwipangestu/nestjs-boilerplate/commit/8aea84a19b1ef241fdf177ea46044a33ace329fc))
+* **observability:** add more app attribute, runtime metrics, and remove proxy metrics endpoint ([9651f5f](https://github.com/armandwipangestu/nestjs-boilerplate/commit/9651f5f02f8cc9089bcf5a7e310574c74c607474))
+* **observability:** adjust dashboard metrics with application ([348bf1e](https://github.com/armandwipangestu/nestjs-boilerplate/commit/348bf1ec26380d5e4b59601fe1f405090a53a30f))
+* **service:** move access data or database query to repository pattern ([a247fba](https://github.com/armandwipangestu/nestjs-boilerplate/commit/a247fbaf6243a41655cff41224b4d12b5411da8b))
+
 ## [1.5.0-rc.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.5.0-rc.1...v1.5.0-rc.2) (2026-03-04)
 
 ### ✨ Features

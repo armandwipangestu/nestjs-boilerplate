@@ -1,6 +1,6 @@
 {
   "name": "nestjs-boilerplate",
-  "version": "1.5.0-rc.2",
+  "version": "1.5.0",
   "description": "A powerful, type-safe NestJS boilerplate designed for scalability and developer experience. It comes pre-configured with essential tools like Prisma ORM, JWT Authentication (including Refresh Tokens), RBAC, Swagger documentation, and a robust logging system.",
   "author": "",
   "private": true,
