@@ -70,4 +70,8 @@ export class AppConfigService {
       'app.openTelemetry',
     );
   }
+
+  get dbSlowQueryThreshold() {
+    return this.openTelemetry.dbSlowQueryThreshold;
+  }
 }

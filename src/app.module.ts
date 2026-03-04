@@ -9,7 +9,6 @@ import { AuthModule } from './auth/auth.module';
 import { AppConfigModule } from './config/app-config.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppConfigService } from './config/app-config.service';
-import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from './common/cache/cache.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { CustomLoggerService } from './common/logger/logger.service';
@@ -22,6 +21,10 @@ import { StorageModule } from './common/storage/storage.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MetricsModule } from './common/observability/metrics.module';
+import { HttpActiveRequestsInterceptor } from './common/observability/http-active-requests.interceptor';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { APP_GUARD, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -66,6 +69,7 @@ import { join } from 'path';
     PostModule,
     StorageModule,
     UserModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -73,6 +77,14 @@ import { join } from 'path';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpActiveRequestsInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
   ],
 })

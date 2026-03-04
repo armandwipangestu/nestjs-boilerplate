@@ -4,6 +4,8 @@ import { AppConfigService } from '../../config/app-config.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { AppConfigModule } from '../../config/app-config.module';
 import { LoggerModule } from '../logger/logger.module';
+import { MetricsService } from '../observability/metrics.service';
+
 
 export const REDIS_CLIENT = 'REDIS_CLIENT';
 
@@ -13,7 +15,11 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
   providers: [
     {
       provide: REDIS_CLIENT,
-      useFactory: (config: AppConfigService, logger: CustomLoggerService) => {
+      useFactory: (
+        config: AppConfigService,
+        logger: CustomLoggerService,
+        metricsService: MetricsService,
+      ) => {
         const redis = new Redis({
           host: config.redis.host,
           port: config.redis.port,
@@ -52,9 +58,48 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
           }
         });
 
-        return redis;
+
+
+        // Metrics Wrapper
+        const metricsWrapper = new Proxy(redis, {
+          get: (target, prop, receiver) => {
+            const originalValue = Reflect.get(target, prop, receiver);
+
+            if (typeof originalValue === 'function' && typeof prop === 'string') {
+              // Only wrap actual commands (ioredis commands are usually lowercase)
+              // This is a simple heuristic. ioredis also has an internal list of commands.
+              const isCommand = /^[a-z]/.test(prop) && !['on', 'once', 'off', 'emit', 'quit', 'disconnect'].includes(prop);
+
+              if (isCommand) {
+                return async (...args: any[]) => {
+                  const startTime = process.hrtime.bigint();
+                  const labels = { command: prop };
+
+                  // Increment total counter (all attempts)
+                  metricsService.redisCommandTotal.add(1, labels);
+
+                  try {
+                    const result = await originalValue.apply(target, args);
+                    const durationMs = Number(process.hrtime.bigint() - startTime) / 1_000_000;
+
+                    metricsService.redisCommandDuration.record(durationMs, labels);
+
+                    return result;
+                  } catch (error) {
+                    metricsService.redisCommandErrorsTotal.add(1, labels);
+                    throw error;
+                  }
+                };
+              }
+            }
+
+            return originalValue;
+          },
+        });
+
+        return metricsWrapper;
       },
-      inject: [AppConfigService, CustomLoggerService],
+      inject: [AppConfigService, CustomLoggerService, MetricsService],
     },
   ],
   exports: [REDIS_CLIENT],
