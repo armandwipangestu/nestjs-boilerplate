@@ -17,3 +17,7 @@
 ![Tracing 1](assets/Tracing-1.png)
 
 ![Tracing 2](assets/Tracing-2.png)
+
+## Stres Test: k6
+
+![Stres Test](assets/Stres-Test.png)
