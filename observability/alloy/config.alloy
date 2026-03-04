@@ -1,0 +1,35 @@
+logging {
+  level = "info"
+}
+
+local.file_match "nestjs_boilerplate_logs" {
+  path_targets = [
+    { "__path__" = "/logs/application-*.log" },
+    { "__path__" = "/logs/error-*.log" },
+  ]
+}
+
+loki.source.file "nestjs_boilerplate" {
+  targets    = local.file_match.nestjs_boilerplate_logs.targets
+  forward_to = [loki.process.nestjs_boilerplate.receiver]
+}
+
+loki.process "nestjs_boilerplate" {
+  stage.static_labels {
+    values = {
+      job          = "nestjs-boilerplate",
+      service_name = "nestjs-boilerplate",
+      env          = "development",
+      hostname     = constants.hostname,
+      instance     = "nestjs-boilerplate",
+    }
+  }
+
+  forward_to = [loki.write.to_loki.receiver]
+}
+
+loki.write "to_loki" {
+  endpoint {
+    url = "http://loki-nestjs-boilerplate:3100/loki/api/v1/push"
+  }
+}

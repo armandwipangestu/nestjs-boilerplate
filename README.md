@@ -10,6 +10,12 @@
 ![Redis](https://img.shields.io/badge/-Redis-131821?style=for-the-badge&logo=redis)&nbsp;
 ![Swagger](https://img.shields.io/badge/-Swagger-131821?style=for-the-badge&logo=swagger)&nbsp;
 ![S3](https://img.shields.io/badge/-S3-131821?style=for-the-badge&logo=minio)&nbsp;
+![OpenTelemetry](https://img.shields.io/badge/-OpenTelemetry-131821?style=for-the-badge&logo=opentelemetry)&nbsp;
+![Grafana](https://img.shields.io/badge/-Grafana-131821?style=for-the-badge&logo=grafana)&nbsp;
+![Loki](https://img.shields.io/badge/-Loki-131821?style=for-the-badge&logo=grafana)&nbsp;
+![Tempo](https://img.shields.io/badge/-Tempo-131821?style=for-the-badge&logo=grafana)&nbsp;
+![Alloy](https://img.shields.io/badge/-Alloy-131821?style=for-the-badge&logo=grafana)&nbsp;
+![Prometheus](https://img.shields.io/badge/-Prometheus-131821?style=for-the-badge&logo=prometheus)&nbsp;
 
 </div>
 
@@ -84,11 +90,33 @@ cp .env.example .env
 # Generate Prisma client
 bun run prisma generate
 
+# Run migrations
+bun run prisma:migrate:deploy
+
+# Run seeder
+bun run prisma:seed
+
 # Run in development mode
 bun run start:dev
 ```
 
 ### Using Docker
+
+> [!NOTE]
+> If you want to run `loki`, `tempo`, and `prometheus`. You should change ownership folder using this command:
+>
+> ```bash
+> # loki
+> sudo chown -R 10001:10001 ./docker-data/loki
+>
+> # tempo
+> sudo chown -R 10001:10001 ./docker-data/tempo
+>
+> # prometheus
+> sudo chown -R 65534:65534 ./docker-data/prometheus
+> ```
+>
+> You can also import dashboard for metrics using `observability/grafana/dashboard-metrics.json` and logs using `observability/grafana/dashboard-logs.json`.
 
 ```bash
 docker-compose up -d
@@ -108,6 +136,7 @@ docker-compose up -d
 - [ ✅ ] Semantic Versioning & Conventional Commits
 - [ ✅ ] Export data metrics using Prometheus exporter (Port 9464)
 - [ ✅ ] Distributed tracing integration using OpenTelemetry
+- [ ✅ ] Observability setup using OpenTelemetry, Grafana, Loki, Tempo, and Prometheus
 - [ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
 - [ ] Stresss / load test using K6
 - [ ] Unit & E2E Tests coverage

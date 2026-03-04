@@ -1,0 +1,818 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Dashboard for Rasperry Pi Logs with Alloy and Loki",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "afexcplrl0cg0a"
+      },
+      "description": "Number of DEBUG log messages",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"(?i)\\\\b(debug)\\\\b\" | label_format detected_level=\"debug\" | __error__=\"\" [$__range]))",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "DEBUG Logs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "afexcplrl0cg0a"
+      },
+      "description": "Number of INFO log messages",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"(?i)\\\\b(info|notice)\\\\b\" | label_format detected_level=\"info\" | __error__=\"\" [$__range]))",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "INFO Logs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "afexcplrl0cg0a"
+      },
+      "description": "Number of WARN log messages",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"(?i)\\\\b(warn|warning)\\\\b\" | label_format detected_level=\"warn\" [$__range]))",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "WARN Logs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "afexcplrl0cg0a"
+      },
+      "description": "Number of ERROR log messages",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} | logfmt |~ \"(?i)\\\\b(error|fail|critical|crit|fatal)\\\\b\" | label_format detected_level=\"error\" | __error__=\"\" [$__range]))",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "ERROR Logs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "afexcplrl0cg0a"
+      },
+      "description": "Total number of log messages",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum(count_over_time({hostname=\"$host\"} [$__range]))",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "All Logs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "afexcplrl0cg0a"
+      },
+      "description": "Warnings, Errors, Infos, Debugs, Fatals, and Traces  over time",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Warning"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Info"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Debug"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Debug"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Debug"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"\\\\b(?i)(warn|warning)\\\\b\"| label_format detected_level=\"warn\" | __error__=\"\" [$__range]))",
+          "legendFormat": "Warning",
+          "queryType": "range",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"(?i)\\\\b(error|fail|critical|crit|fatal)\\\\b\" | label_format detected_level=\"error\" | __error__=\"\" [$__range]))",
+          "hide": false,
+          "legendFormat": "Error",
+          "queryType": "range",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"\\\\b(?i)(info)\\\\b\"| label_format detected_level=\"info\" | __error__=\"\" [$__range]))",
+          "hide": false,
+          "legendFormat": "Info",
+          "queryType": "range",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"\\\\b(?i)(debug)\\\\b\"| label_format detected_level=\"debug\" | __error__=\"\" [$__range]))",
+          "hide": false,
+          "legendFormat": "Debug",
+          "queryType": "range",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"\\\\b(?i)(fatal)\\\\b\"| label_format detected_level=\"fatal\" | __error__=\"\" [$__range]))",
+          "hide": false,
+          "legendFormat": "Fatal",
+          "queryType": "range",
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "editorMode": "code",
+          "expr": "sum by (detected_level) (count_over_time({hostname=\"$host\"} |~ \"\\\\b(?i)(trace)\\\\b\"| label_format detected_level=\"trace\" | __error__=\"\" [$__range]))",
+          "hide": false,
+          "legendFormat": "Trace",
+          "queryType": "range",
+          "refId": "F"
+        }
+      ],
+      "title": "Warnings, Errors, Infos, Debugs, Fatals, and Traces  over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "afexcplrl0cg0a"
+      },
+      "description": "Displaying logs by severity",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 8,
+      "options": {
+        "dedupStrategy": "none",
+        "enableInfiniteScrolling": true,
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{hostname=\"$host\"} |~ \"(?i)\\\\b(debug)\\\\b\" | label_format detected_level=\"debug\" |= \"$filter\" | line_format `🔵 {{regexReplaceAll \"level=debug|ts=[^\\\\s]+\\\\s\" __line__ \"\" | trim  }}`",
+          "hide": false,
+          "queryType": "range",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{hostname=\"$host\"}|~ \"(?i)\\\\b(info|notice)\\\\b\" | label_format detected_level=\"info\" |= \"$filter\" | line_format `🟢 {{regexReplaceAll \"level=info|ts=[^\\\\s]+\\\\s\" __line__ \"\" | trim }}`",
+          "hide": false,
+          "queryType": "range",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{hostname=\"$host\"} |~ \"(?i)\\\\b(warn|warning)\\\\b\" | label_format detected_level=\"warn\" |= \"$filter\" | line_format `🟡 {{regexReplaceAll \"level=warn|ts=[^\\\\s]+\\\\s\" __line__ \"\" | trim  }}`",
+          "hide": false,
+          "queryType": "range",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{hostname=\"$host\"} \r\n|~ \"(?i)\\\\b(error|fail|critical|crit|fatal)\\\\b\" \r\n| label_format detected_level=\"error\" \r\n|= \"$filter\" \r\n| line_format `🔴 {{regexReplaceAll \"level=error|ts=[^\\\\s]+\\\\s\" __line__ \"\" | trim  }}`\r\n",
+          "hide": false,
+          "queryType": "range",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{hostname=\"$host\"} |= \"$filter\" | line_format `🔴 {{regexReplaceAll \"level=error|ts=[^\\\\s]+\\\\s\" __line__ \"\" | trim  }}`",
+          "hide": true,
+          "queryType": "range",
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "editorMode": "code",
+          "expr": "{hostname=\"$host\"} |~ \"(?i)\\\\b(fatal)\\\\b\" | label_format detected_level=\"fatal\" |= \"$filter\" | line_format `🟠 {{regexReplaceAll \"level=fatal|ts=[^\\\\s]+\\\\s\" __line__ \"\" | trim  }}`",
+          "hide": false,
+          "queryType": "range",
+          "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "afexcplrl0cg0a"
+          },
+          "editorMode": "code",
+          "expr": "{hostname=\"$host\"} |~ \"(?i)\\\\b(trace)\\\\b\" | label_format detected_level=\"trace\" |= \"$filter\" | line_format `🟣 {{regexReplaceAll \"level=trace|ts=[^\\\\s]+\\\\s\" __line__ \"\" | trim  }}`",
+          "hide": false,
+          "queryType": "range",
+          "refId": "G"
+        }
+      ],
+      "title": "Logs sorted by severity",
+      "type": "logs"
+    }
+  ],
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 40,
+  "tags": [
+    "loki",
+    "logs",
+    "promtail"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "loki",
+          "value": "afexcplrl0cg0a"
+        },
+        "description": "Loki Datenquelle",
+        "includeAll": false,
+        "label": "Datenquelle",
+        "name": "DS_LOKI",
+        "options": [],
+        "query": "loki",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "label": "Filter",
+        "name": "filter",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "ca3bbb7b2d21",
+          "value": "ca3bbb7b2d21"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "afexcplrl0cg0a"
+        },
+        "definition": "",
+        "label": "host",
+        "name": "host",
+        "options": [],
+        "query": {
+          "label": "hostname",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Alloy and Loki Dashboard",
+  "uid": "alloy-loki-logs",
+  "version": 12,
+  "weekStart": "monday"
+}
