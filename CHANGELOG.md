@@ -1,3 +1,25 @@
+## [1.5.0-rc.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.5.0-rc.1...v1.5.0-rc.2) (2026-03-04)
+
+### ✨ Features
+
+* **test:** add unit and e2e tests coverage ([f9ec662](https://github.com/armandwipangestu/nestjs-boilerplate/commit/f9ec662a79785fb59c6a178e54558d38520a4111))
+
+### 🐛 Bug Fixes
+
+* **ci:** add prisma generate before run unit tests ([d8373eb](https://github.com/armandwipangestu/nestjs-boilerplate/commit/d8373ebec947fdea7ba0faf4186b0f93b11bc293))
+* **ci:** change from npx to bunx ([b1396f6](https://github.com/armandwipangestu/nestjs-boilerplate/commit/b1396f6aa7639f884e028cceed09d002ad43294c))
+* **ci:** remove node_modules from cache ([4afb591](https://github.com/armandwipangestu/nestjs-boilerplate/commit/4afb5913a4c0ae786bdc864581042cf3c6e090ce))
+* **ci:** revert to nodejs 25 and use npx ([ebdf2de](https://github.com/armandwipangestu/nestjs-boilerplate/commit/ebdf2de73b783cec9fa5a8b6b547c215675db9f6))
+
+### 🧹 Chores
+
+* update bruno ([fc69839](https://github.com/armandwipangestu/nestjs-boilerplate/commit/fc69839230d59878b7431b0650aca5d26b116ec1))
+* using ghcr for image ([8db9df2](https://github.com/armandwipangestu/nestjs-boilerplate/commit/8db9df2960c47077451893953a92a32f10b73d9b))
+
+### ♻️ Refactor
+
+* **service:** move access data or database query to repository pattern ([a247fba](https://github.com/armandwipangestu/nestjs-boilerplate/commit/a247fbaf6243a41655cff41224b4d12b5411da8b))
+
 ## [1.5.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.4.2...v1.5.0-rc.1) (2026-03-04)
 
 ### ✨ Features
