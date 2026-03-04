@@ -96,10 +96,10 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Setup Node.js 25 for Semantic Release
+      - name: Setup Node.js 22 for Semantic Release
         uses: actions/setup-node@v6
         with:
-          node-version: "25"
+          node-version: "22"
 
       - name: Run semantic-release
         env:

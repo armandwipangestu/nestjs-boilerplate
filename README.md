@@ -17,6 +17,7 @@
 ![Alloy](https://img.shields.io/badge/-Alloy-131821?style=for-the-badge&logo=grafana)&nbsp;
 ![Prometheus](https://img.shields.io/badge/-Prometheus-131821?style=for-the-badge&logo=prometheus)&nbsp;
 ![k6](https://img.shields.io/badge/-k6-131821?style=for-the-badge&logo=k6)&nbsp;
+![Jest](https://img.shields.io/badge/-Jest-131821?style=for-the-badge&logo=jest)&nbsp;
 
 </div>
 
@@ -56,7 +57,7 @@ A powerful, type-safe NestJS boilerplate designed for scalability and developer 
 
 ## Repo Stats
 
-![Alt](https://repobeats.axiom.co/api/embed/bacf3559fe13db7c67ff75df6188a697271bdd96.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/bacf3559fe13db7c67ff75df6188a697271bdd96.svg 'Repobeats analytics image')
 
 ## Star History
 
@@ -141,22 +142,22 @@ BASE_URL=http://localhost:3000 k6 run observability/k6/load-test.js
 
 ## Roadmap
 
-- [ ✅ ] JWT Authentication with Refresh Tokens
-- [ ✅ ] RBAC implementation
-- [ ✅ ] Swagger Documentation
-- [ ✅ ] Prisma & PostgreSQL Integration
-- [ ✅ ] Redis Integration
-- [ ✅ ] Custom Logger (Winston)
-- [ ✅ ] CORS Whitelisting
-- [ ✅ ] Global Validation Pipe
-- [ ✅ ] CI/CD Github Actions
-- [ ✅ ] Semantic Versioning & Conventional Commits
-- [ ✅ ] Export data metrics using Prometheus exporter (Port 9464)
-- [ ✅ ] Distributed tracing integration using OpenTelemetry
-- [ ✅ ] Observability setup using OpenTelemetry, Grafana, Loki, Tempo, and Prometheus
-- [ ✅ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
-- [ ✅ ] Load testing using k6
-- [ ] Unit & E2E Tests coverage
+- [x] JWT Authentication with Refresh Tokens
+- [x] RBAC implementation
+- [x] Swagger Documentation
+- [x] Prisma & PostgreSQL Integration
+- [x] Redis Integration
+- [x] Custom Logger (Winston)
+- [x] CORS Whitelisting
+- [x] Global Validation Pipe
+- [x] CI/CD Github Actions
+- [x] Semantic Versioning & Conventional Commits
+- [x] Export data metrics using Prometheus exporter (Port 9464)
+- [x] Distributed tracing integration using OpenTelemetry
+- [x] Observability setup using OpenTelemetry, Grafana, Loki, Tempo, and Prometheus
+- [x] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
+- [x] Load testing using k6
+- [x] Unit & E2E Tests coverage
 
 ## License
 

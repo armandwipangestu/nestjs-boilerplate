@@ -40,18 +40,18 @@ jobs:
       # - name: Run lint
       #   run: bun run lint
 
-      # - name: Run tests
-      #   run: bun test
+      - name: Run unit tests
+        run: bun run test
 
       - name: Build app (for validation)
         run: bun run build
         env:
           CI: true
 
-      - name: Setup Node.js 25 for Semantic Release
+      - name: Setup Node.js 22 for Semantic Release
         uses: actions/setup-node@v6
         with:
-          node-version: "25"
+          node-version: "22"
 
       - name: Validate Semantic Release (Dry Run)
         env:
