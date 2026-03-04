@@ -308,6 +308,7 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
+      "description": "Monitor model and action that slow database query",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -318,7 +319,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               }
             ]
@@ -337,7 +338,7 @@
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
-        "orientation": "auto",
+        "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
@@ -358,15 +359,29 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "target_info",
+          "expr": "db_slow_query_total",
           "format": "time_series",
           "instant": true,
-          "legendFormat": "{{service_name}}",
+          "legendFormat": "Model: {{model}}",
           "range": false,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "db_slow_query_total",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "Action: {{action}}",
+          "range": false,
+          "refId": "B"
         }
       ],
-      "title": "App Name",
+      "title": "Database Slow Query",
       "type": "stat"
     },
     {
@@ -1496,13 +1511,13 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "NestJS Boilerplate Application Metrics",
   "uid": "nestjs-boilerplate-metrics",
-  "version": 11,
+  "version": 12,
   "weekStart": ""
 }
