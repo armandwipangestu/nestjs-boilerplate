@@ -1,6 +1,6 @@
 services:
   nestjs-boilerplate:
-    image: nestjs-boilerplate:latest
+    image: ghcr.io/armandwipanestu/nestjs-boilerplate:1.5.0
     container_name: nestjs-boilerplate
     restart: always
     ports:

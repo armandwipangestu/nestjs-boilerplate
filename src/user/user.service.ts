@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../common/logger/logger.service';
 import { CacheService } from '../common/cache/cache.service';
 import { StorageService } from '../common/storage/storage.service';
+import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
@@ -26,7 +26,7 @@ const USER_CACHE_PREFIX = 'users';
 @Injectable()
 export class UserService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly userRepository: UserRepository,
     private readonly logger: CustomLoggerService,
     private readonly cacheService: CacheService,
     private readonly storage: StorageService,
@@ -104,35 +104,10 @@ export class UserService {
       ...(isActive !== undefined && { isActive }),
     };
 
-    const [users, total] = (await Promise.all([
-      this.prisma.user.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          roles: {
-            include: {
-              role: {
-                include: {
-                  permissions: {
-                    include: {
-                      permission: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          permissions: {
-            include: {
-              permission: true,
-            },
-          },
-        },
-      }),
-      this.prisma.user.count({ where }),
-    ])) as [UserWithAclRelations[], number];
+    const [users, total] = await Promise.all([
+      this.userRepository.findManyWithAcl(where, skip, limit),
+      this.userRepository.count(where),
+    ]);
 
     const totalPages = Math.ceil(total / limit);
     const meta: PaginationMetaDto = {
@@ -161,29 +136,7 @@ export class UserService {
       return cached;
     }
 
-    const user = (await this.prisma.user.findUnique({
-      where: { id },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        permissions: {
-          include: {
-            permission: true,
-          },
-        },
-      },
-    })) as UserWithAclRelations | null;
+    const user = await this.userRepository.findByIdWithAcl(id);
 
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
@@ -197,11 +150,10 @@ export class UserService {
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const { roles, ...userData } = dto;
 
-    const existing = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ email: dto.email }, { username: dto.username }],
-      },
-    });
+    const existing = await this.userRepository.findByEmailOrUsername(
+      dto.email,
+      dto.username,
+    );
 
     if (existing) {
       throw new ConflictException(
@@ -211,47 +163,25 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    const user = (await this.prisma.user.create({
-      data: {
-        ...userData,
-        password: hashedPassword,
-        roles: roles?.length
-          ? {
-              create: roles.map((roleName) => ({
-                role: {
-                  connect: { name: roleName },
-                },
-              })),
-            }
-          : {
-              create: {
-                role: {
-                  connect: { name: 'USER' },
-                },
+    const user = await this.userRepository.createUser({
+      ...userData,
+      password: hashedPassword,
+      roles: roles?.length
+        ? {
+            create: roles.map((roleName) => ({
+              role: {
+                connect: { name: roleName },
               },
-            },
-      },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
+            })),
+          }
+        : {
+            create: {
+              role: {
+                connect: { name: 'USER' },
               },
             },
           },
-        },
-        permissions: {
-          include: {
-            permission: true,
-          },
-        },
-      },
-    })) as UserWithAclRelations;
+    });
 
     this.logger.log(`User created: ${user.id}`, 'UserService');
     await this.cacheService.reset();
@@ -259,7 +189,7 @@ export class UserService {
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
-    const existing = await this.prisma.user.findUnique({ where: { id } });
+    const existing = await this.userRepository.findById(id);
     if (!existing) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -270,43 +200,20 @@ export class UserService {
       ? await bcrypt.hash(updateData.password, 10)
       : undefined;
 
-    const updated = (await this.prisma.user.update({
-      where: { id },
-      data: {
-        ...(updateData as any),
-        ...(password && { password }),
-        ...(roles && {
-          roles: {
-            deleteMany: {},
-            create: roles.map((roleName) => ({
-              role: {
-                connect: { name: roleName },
-              },
-            })),
-          },
-        }),
-      } as Prisma.UserUpdateInput,
-      include: {
+    const updated = await this.userRepository.updateUser(id, {
+      ...(updateData as any),
+      ...(password && { password }),
+      ...(roles && {
         roles: {
-          include: {
+          deleteMany: {},
+          create: roles.map((roleName) => ({
             role: {
-              include: {
-                permissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
-              },
+              connect: { name: roleName },
             },
-          },
+          })),
         },
-        permissions: {
-          include: {
-            permission: true,
-          },
-        },
-      },
-    })) as UserWithAclRelations;
+      }),
+    } as Prisma.UserUpdateInput);
 
     this.logger.log(`User updated: ${id}`, 'UserService');
     await this.invalidateUserCache(id);
@@ -314,12 +221,12 @@ export class UserService {
   }
 
   async remove(id: string): Promise<{ message: string }> {
-    const existing = await this.prisma.user.findUnique({ where: { id } });
+    const existing = await this.userRepository.findById(id);
     if (!existing) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
-    await this.prisma.user.delete({ where: { id } });
+    await this.userRepository.deleteUser(id);
 
     if (existing.avatarUrl) {
       await this.storage.delete(existing.avatarUrl);
@@ -334,7 +241,7 @@ export class UserService {
     id: string,
     file: Express.Multer.File,
   ): Promise<UserResponseDto> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -345,30 +252,7 @@ export class UserService {
 
     const avatarUrl = await this.storage.upload(file);
 
-    const updated = (await this.prisma.user.update({
-      where: { id },
-      data: { avatarUrl },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        permissions: {
-          include: {
-            permission: true,
-          },
-        },
-      },
-    })) as UserWithAclRelations;
+    const updated = await this.userRepository.updateAvatar(id, avatarUrl);
 
     this.logger.log(`Avatar uploaded for user: ${id}`, 'UserService');
     await this.invalidateUserCache(id);
