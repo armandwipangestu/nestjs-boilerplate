@@ -16,6 +16,7 @@
 ![Tempo](https://img.shields.io/badge/-Tempo-131821?style=for-the-badge&logo=grafana)&nbsp;
 ![Alloy](https://img.shields.io/badge/-Alloy-131821?style=for-the-badge&logo=grafana)&nbsp;
 ![Prometheus](https://img.shields.io/badge/-Prometheus-131821?style=for-the-badge&logo=prometheus)&nbsp;
+![k6](https://img.shields.io/badge/-k6-131821?style=for-the-badge&logo=k6)&nbsp;
 
 </div>
 
@@ -122,6 +123,22 @@ bun run start:dev
 docker-compose up -d
 ```
 
+### Load Testing with k6
+
+You can perform load testing using the provided `k6` script located at `observability/k6/load-test.js`.
+
+#### Running Locally
+
+If you have `k6` installed on your machine:
+
+```bash
+# Basic run
+k6 run observability/k6/load-test.js
+
+# Run with custom environment variables
+BASE_URL=http://localhost:3000 k6 run observability/k6/load-test.js
+```
+
 ## Roadmap
 
 - [ ✅ ] JWT Authentication with Refresh Tokens
@@ -137,8 +154,8 @@ docker-compose up -d
 - [ ✅ ] Export data metrics using Prometheus exporter (Port 9464)
 - [ ✅ ] Distributed tracing integration using OpenTelemetry
 - [ ✅ ] Observability setup using OpenTelemetry, Grafana, Loki, Tempo, and Prometheus
-- [ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
-- [ ] Stresss / load test using K6
+- [ ✅ ] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
+- [ ✅ ] Load testing using k6
 - [ ] Unit & E2E Tests coverage
 
 ## License
