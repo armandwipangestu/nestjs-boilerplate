@@ -4,7 +4,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { CustomLoggerService } from '../common/logger/logger.service';
 import { RefreshToken } from '@prisma/client';
@@ -18,14 +17,15 @@ import type {
   UserWithAcl,
 } from './interfaces/auth.interface';
 import { RegisterDto } from './dto/register.dto';
+import { AuthRepository } from './auth.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private logger: CustomLoggerService,
-    private appConfig: AppConfigService,
+    private readonly authRepository: AuthRepository,
+    private readonly jwtService: JwtService,
+    private readonly logger: CustomLoggerService,
+    private readonly appConfig: AppConfigService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserWithAcl> {
@@ -56,62 +56,14 @@ export class AuthService {
   }
 
   async getUserWithAclByEmail(email: string): Promise<UserWithAcl | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        permissions: {
-          include: {
-            permission: true,
-          },
-        },
-      },
-    });
-
+    const user = await this.authRepository.findUserByEmailWithAcl(email);
     if (!user) return null;
-
     return this.mapUserAcl(user);
   }
 
   async getUserWithAclById(id: string): Promise<UserWithAcl | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        permissions: {
-          include: {
-            permission: true,
-          },
-        },
-      },
-    });
-
+    const user = await this.authRepository.findUserByIdWithAcl(id);
     if (!user) return null;
-
     return this.mapUserAcl(user);
   }
 
@@ -159,13 +111,11 @@ export class AuthService {
 
     const hashedToken = await bcrypt.hash(refreshToken, 10);
 
-    await this.prisma.refreshToken.create({
-      data: {
-        token: hashedToken,
-        userId: user.id,
-        expiresAt,
-      },
-    });
+    await this.authRepository.createRefreshToken(
+      user.id,
+      hashedToken,
+      expiresAt,
+    );
 
     return {
       accessToken,
@@ -183,12 +133,9 @@ export class AuthService {
       });
 
       // Verify token exists in database
-      const storedTokens = await this.prisma.refreshToken.findMany({
-        where: {
-          userId: payload.sub,
-          expiresAt: { gt: new Date() },
-        },
-      });
+      const storedTokens = await this.authRepository.findRefreshTokensByUserId(
+        payload.sub,
+      );
 
       let matchedToken: RefreshToken | null = null;
 
@@ -243,23 +190,17 @@ export class AuthService {
   }
 
   async logout(userId: string, email: string): Promise<void> {
-    await this.prisma.refreshToken.deleteMany({
-      where: {
-        userId,
-      },
-    });
-
+    await this.authRepository.deleteRefreshTokensByUserId(userId);
     this.logger.log(`User logged out: ${email}`, 'Auth');
   }
 
   async register(data: RegisterDto): Promise<AuthUser> {
     const { email, password, username, firstName, lastName } = data;
 
-    const existingUser = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { username }],
-      },
-    });
+    const existingUser = await this.authRepository.findUserByEmailOrUsername(
+      email,
+      username,
+    );
 
     if (existingUser) {
       throw new BadRequestException(
@@ -269,43 +210,12 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await this.prisma.user.create({
-      data: {
-        email,
-        username,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        roles: {
-          create: {
-            role: {
-              connect: {
-                name: 'USER',
-              },
-            },
-          },
-        },
-      },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        permissions: {
-          include: {
-            permission: true,
-          },
-        },
-      },
+    const user = await this.authRepository.createUser({
+      email,
+      username,
+      password: hashedPassword,
+      firstName,
+      lastName,
     });
 
     this.logger.log(`User registered: ${email}`, 'Auth');

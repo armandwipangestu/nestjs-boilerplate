@@ -1,3 +1,4 @@
+import './otel';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
@@ -6,11 +7,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import { AppConfigService } from './config/app-config.service';
 import { CustomLoggerService } from './common/logger/logger.service';
+import { otelSdk } from './otel';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
+
+  app.enableShutdownHooks();
 
   const logger = app.get(CustomLoggerService);
   app.useLogger(logger);
@@ -78,6 +82,49 @@ async function bootstrap() {
       }
     }, 2000);
   }
+
+  const gracefulShutdown = async (signal: string) => {
+    logger.warn(
+      `${signal} received. Starting graceful shutdown...`,
+      'Bootstrap',
+    );
+
+    const shutdownTimeout = setTimeout(() => {
+      logger.error('Force shutdown due to timeout', 'Bootstrap');
+      process.exit(1);
+    }, 5000);
+
+    try {
+      // Stop accepting new connections
+      await app.close();
+      logger.log('Nest application closed', 'Bootstrap');
+
+      // Flush traces & stop metrics exporter
+      if (otelSdk) {
+        await otelSdk.shutdown();
+        logger.log('OpenTelemetry SDK shut down', 'Bootstrap');
+      }
+
+      clearTimeout(shutdownTimeout);
+
+      logger.log('Shutdown complete', 'Bootstrap');
+      process.exit(0);
+    } catch (error) {
+      logger.error(
+        'Error during shutdown',
+        error instanceof Error ? error.stack : String(error),
+        'Bootstrap',
+      );
+      process.exit(1);
+    }
+  };
+
+  process.on('SIGINT', () => {
+    void gracefulShutdown('SIGINT');
+  });
+  process.on('SIGTERM', () => {
+    void gracefulShutdown('SIGTERM');
+  });
 }
 
 bootstrap().catch((err) => {

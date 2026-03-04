@@ -1,10 +1,11 @@
 services:
-  app-nestjs-boilerplate:
-    image: nestjs-boilerplate:latest
-    container_name: app-nestjs-boilerplate
+  nestjs-boilerplate:
+    image: ghcr.io/armandwipanestu/nestjs-boilerplate:1.5.0
+    container_name: nestjs-boilerplate
     restart: always
     ports:
       - "3001:3000"
+      - "9465:9464"
     env_file:
       - .env.app
     depends_on:
@@ -95,3 +96,148 @@ services:
       options:
         max-size: "500M"
         max-file: "3"
+
+  otel-collector-nestjs-boilerplate:
+    image: otel/opentelemetry-collector-contrib:0.135.0
+    container_name: otel-collector-nestjs-boilerplate
+    restart: always
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./observability/otel-collector/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+
+  tempo-nestjs-boilerplate:
+    image: grafana/tempo:main-eb21336-amd64
+    container_name: tempo-nestjs-boilerplate
+    restart: always
+    ports:
+      - "3200:3200" # Tempo HTTP port
+      - "4320:4320" # Tempo gRPC port
+    command: ["-config.file=/etc/tempo-config.yaml"]
+    volumes:
+      - ./observability/tempo/tempo-config.yaml:/etc/tempo-config.yaml
+      - ./docker-data/tempo:/tmp/tempo
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+      
+  grafana-nestjs-boilerplate:
+    image: grafana/grafana:11.4.0
+    container_name: grafana-nestjs-boilerplate
+    restart: always
+    environment:
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=postgres-grafana-nestjs-boilerplate:5432
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=grafana
+      - GF_DATABASE_PASSWORD=password
+    ports:
+      - "3002:3000"
+    depends_on:
+      postgres-grafana-nestjs-boilerplate:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        until nc -z postgres-grafana-nestjs-boilerplate 5432; do
+          echo 'Waiting for postgres-grafana-nestjs-boilerplate...' ;
+          sleep 2;
+        done;
+        exec /run.sh
+      "
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+  
+  postgres-grafana-nestjs-boilerplate:
+    image: postgres:17-bookworm
+    container_name: postgres-grafana-nestjs-boilerplate
+    restart: always
+    environment: 
+      POSTGRES_USER: grafana
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: grafana
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./docker-data/postgres-grafana:/var/lib/postgresql/data
+      - ./observability/grafana/init-grafana.sql:/docker-entrypoint-initdb.d/init-grafana.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grafana"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+
+  prometheus-nestjs-boilerplate:
+    image: prom/prometheus:v2.53.3
+    container_name: prometheus-nestjs-boilerplate
+    restart: always
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+    volumes:
+      - ./observability/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./docker-data/prometheus:/prometheus
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+
+  loki-nestjs-boilerplate:
+    image: grafana/loki:3.5.0
+    container_name: loki-nestjs-boilerplate
+    restart: always
+    ports:
+      - "3100:3100"
+    command:
+      - "-config.file=/etc/loki/loki-config.yaml"
+    volumes:
+      - ./observability/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - ./docker-data/loki:/loki
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://loki-nestjs-boilerplate:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+  
+  alloy-nestjs-boilerplate:
+    image: grafana/alloy:v1.8.3
+    container_name: alloy-nestjs-boilerplate
+    restart: always
+    ports:
+      - "12345:12345"
+    command: ["run", "/etc/alloy/config.alloy"]
+    volumes:
+      - ./observability/alloy/config.alloy:/etc/alloy/config.alloy
+      - ./docker-data/nestjs-boilerplate/logs:/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500M"
+        max-file: "3"
+    depends_on:
+      loki-nestjs-boilerplate:
+        condition: service_healthy

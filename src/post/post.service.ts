@@ -3,34 +3,25 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../common/logger/logger.service';
 import { CacheService } from '../common/cache/cache.service';
+import { PostRepository, PostWithAuthor } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostQueryDto } from './dto/post-query.dto';
 import { PostListResponseDto, PostResponseDto } from './dto/post-response.dto';
 import { PaginationMetaDto } from '../common/dto/pagination.dto';
 import { plainToInstance } from 'class-transformer';
-import type { Post, Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import * as crypto from 'crypto';
 
 const POST_CACHE_PREFIX = 'posts';
 const POST_LIST_CACHE_PREFIX = `${POST_CACHE_PREFIX}:list`;
 
-type PostWithAuthor = Post & {
-  author: {
-    id: string;
-    username: string;
-    firstName: string | null;
-    lastName: string | null;
-  };
-};
-
 @Injectable()
 export class PostService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly postRepository: PostRepository,
     private readonly logger: CustomLoggerService,
     private readonly cacheService: CacheService,
   ) {}
@@ -110,23 +101,8 @@ export class PostService {
     };
 
     const [posts, total] = await Promise.all([
-      this.prisma.post.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          author: {
-            select: {
-              id: true,
-              username: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      }),
-      this.prisma.post.count({ where }),
+      this.postRepository.findMany(where, skip, limit),
+      this.postRepository.count(where),
     ]);
 
     const totalPages = Math.ceil(total / limit);
@@ -140,7 +116,7 @@ export class PostService {
     };
 
     const result: PostListResponseDto = {
-      data: posts.map((p) => this.toPostResponseDto(p as PostWithAuthor)),
+      data: posts.map((p) => this.toPostResponseDto(p)),
       meta,
     };
 
@@ -161,21 +137,14 @@ export class PostService {
       return cached;
     }
 
-    const post = await this.prisma.post.findUnique({
-      where: { id },
-      include: {
-        author: {
-          select: { id: true, username: true, firstName: true, lastName: true },
-        },
-      },
-    });
+    const post = await this.postRepository.findByIdWithAuthor(id);
 
     if (!post) {
       this.logger.warn(`Post not found: ${id}`, 'PostService');
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
 
-    const result = this.toPostResponseDto(post as PostWithAuthor);
+    const result = this.toPostResponseDto(post);
     await this.cacheService.set(cacheKey, result);
     this.logger.log(`Post fetched and cached: ${id}`, 'PostService');
 
@@ -183,18 +152,11 @@ export class PostService {
   }
 
   async create(dto: CreatePostDto, authorId: string): Promise<PostResponseDto> {
-    const post = await this.prisma.post.create({
-      data: {
-        title: dto.title,
-        content: dto.content,
-        published: dto.published ?? false,
-        authorId,
-      },
-      include: {
-        author: {
-          select: { id: true, username: true, firstName: true, lastName: true },
-        },
-      },
+    const post = await this.postRepository.createPost({
+      title: dto.title,
+      content: dto.content,
+      published: dto.published ?? false,
+      authorId,
     });
 
     this.logger.log(
@@ -203,7 +165,7 @@ export class PostService {
     );
 
     await this.invalidateListCache();
-    return this.toPostResponseDto(post as PostWithAuthor);
+    return this.toPostResponseDto(post);
   }
 
   async update(
@@ -212,7 +174,7 @@ export class PostService {
     userId: string,
     userRoles: string[],
   ): Promise<PostResponseDto> {
-    const existing = await this.prisma.post.findUnique({ where: { id } });
+    const existing = await this.postRepository.findById(id);
 
     if (!existing) {
       throw new NotFoundException(`Post with ID "${id}" not found`);
@@ -226,18 +188,10 @@ export class PostService {
       throw new ForbiddenException('You are not allowed to update this post');
     }
 
-    const updated = await this.prisma.post.update({
-      where: { id },
-      data: {
-        ...(dto.title !== undefined && { title: dto.title }),
-        ...(dto.content !== undefined && { content: dto.content }),
-        ...(dto.published !== undefined && { published: dto.published }),
-      },
-      include: {
-        author: {
-          select: { id: true, username: true, firstName: true, lastName: true },
-        },
-      },
+    const updated = await this.postRepository.updatePost(id, {
+      ...(dto.title !== undefined && { title: dto.title }),
+      ...(dto.content !== undefined && { content: dto.content }),
+      ...(dto.published !== undefined && { published: dto.published }),
     });
 
     this.logger.log(`Post updated: ${id} by user: ${userId}`, 'PostService');
@@ -245,7 +199,7 @@ export class PostService {
     await this.invalidatePostCache(id);
     await this.invalidateListCache();
 
-    return this.toPostResponseDto(updated as PostWithAuthor);
+    return this.toPostResponseDto(updated);
   }
 
   async remove(
@@ -253,7 +207,7 @@ export class PostService {
     userId: string,
     userRoles: string[],
   ): Promise<{ message: string }> {
-    const existing = await this.prisma.post.findUnique({ where: { id } });
+    const existing = await this.postRepository.findById(id);
 
     if (!existing) {
       throw new NotFoundException(`Post with ID "${id}" not found`);
@@ -267,7 +221,7 @@ export class PostService {
       throw new ForbiddenException('You are not allowed to delete this post');
     }
 
-    await this.prisma.post.delete({ where: { id } });
+    await this.postRepository.deletePost(id);
 
     this.logger.log(`Post deleted: ${id} by user: ${userId}`, 'PostService');
 

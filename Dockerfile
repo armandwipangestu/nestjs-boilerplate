@@ -3,7 +3,7 @@
 # =========================
 FROM oven/bun:1.2.23-alpine AS builder
 
-LABEL org.opencontainers.image.source="https://github.com/arman/nestjs-boilerplate"
+LABEL org.opencontainers.image.source="https://github.com/armandwipangestu/nestjs-boilerplate"
 LABEL org.opencontainers.image.description="NestJS Boilerplate"
 LABEL org.opencontainers.image.licenses="MIT"
 

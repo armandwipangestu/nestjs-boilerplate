@@ -1,0 +1,69 @@
+auth_enabled: false
+
+server:
+  http_listen_address: 0.0.0.0
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+  log_level: warn
+  grpc_server_max_concurrent_streams: 1000
+
+common:
+  ring:
+    instance_addr: 0.0.0.0
+    kvstore:
+      store: inmemory
+  replication_factor: 1
+  path_prefix: /loki
+  storage:
+    s3:
+      bucketnames: loki
+
+query_range:
+  results_cache:
+    cache:
+      embedded_cache:
+        enabled: true
+        max_size_mb: 100
+
+limits_config:
+  metric_aggregation_enabled: true
+  max_query_lookback: 24h
+  retention_period: 24h
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: tsdb
+      # object_store: filesystem
+      object_store: s3
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+storage_config:
+  # filesystem:
+  #   directory: /loki
+
+  tsdb_shipper:
+    active_index_directory: /loki/index
+    cache_location: /loki/cache
+  aws:
+    endpoint: minio-nestjs-boilerplate:9000
+    bucketnames: loki
+    access_key_id: XT02GAZV8IDI1K34NGCI
+    secret_access_key: Wsiwwet7mufQkY5Q1aDKnrpAWKJP2wf8jsdxyBEm
+    s3forcepathstyle: true
+    insecure: true
+
+compactor:
+  working_directory: /loki/retention
+  compaction_interval: 10m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 150
+  # delete_request_store: filesystem
+  delete_request_store: s3
+
+frontend:
+  encoding: protobuf

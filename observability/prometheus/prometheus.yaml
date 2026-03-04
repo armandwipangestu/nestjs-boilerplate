@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  scrape_timeout: 25s
+
+scrape_configs:
+  - job_name: "nestjs-boilerplate"
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: ["nestjs-boilerplate:9464"]
