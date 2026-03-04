@@ -5,6 +5,8 @@ import * as pg from 'pg';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcryptjs';
 import type { StringValue } from 'ms';
+import * as readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
 
 /**
  * Prisma v7 Database Seeder
@@ -33,6 +35,18 @@ async function main() {
   const prisma = new PrismaClient({ adapter });
 
   try {
+    const force = process.argv.includes('--force');
+
+    if (process.env.NODE_ENV === 'production' && !force) {
+      console.warn('⚠️  WARNING: You are in PRODUCTION environment!');
+      console.warn(
+        '⚠️  Seeding data will DELETE all existing records and replace them with dummy data.',
+      );
+      console.warn('⚠️  Use --force if you really want to run this.\n');
+
+      process.exit(1);
+    }
+
     console.log('🌱 Starting database seeding...\n');
 
     // Clear existing data (in reverse dependency order)

@@ -1,3 +1,15 @@
+## [1.4.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.4.1...v1.4.2) (2026-03-02)
+
+### 🐛 Bug Fixes
+
+* **ci:** change GITHUB_TOKEN to GH_TOKEN used PAT ([56d0dea](https://github.com/armandwipangestu/nestjs-boilerplate/commit/56d0dea027cda91be6ef5cfd2cc3e483349ff841))
+* **ci:** revert to GITHUB_TOKEN ([b084e9c](https://github.com/armandwipangestu/nestjs-boilerplate/commit/b084e9c0b3c0682f94528ba69926d47b8d1df27d))
+
+### 🧹 Chores
+
+* **release:** 1.4.2-rc.1 [skip ci] ([4d4d232](https://github.com/armandwipangestu/nestjs-boilerplate/commit/4d4d232479f3213c53dc55891507e452384c9c1d))
+* remove on push ci pr-build ([2d1155a](https://github.com/armandwipangestu/nestjs-boilerplate/commit/2d1155ae08e841f19602bdc62024aa1dbf49e2a4))
+
 ## [1.4.2-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.4.1...v1.4.2-rc.1) (2026-03-02)
 
 ### 🐛 Bug Fixes

@@ -64,4 +64,14 @@ export class AppConfigService {
   get s3() {
     return this.config.get<AppConfig['s3']>('app.s3');
   }
+
+  get openTelemetry() {
+    return this.config.getOrThrow<AppConfig['openTelemetry']>(
+      'app.openTelemetry',
+    );
+  }
+
+  get dbSlowQueryThreshold() {
+    return this.openTelemetry.dbSlowQueryThreshold;
+  }
 }
