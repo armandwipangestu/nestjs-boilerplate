@@ -1,3 +1,9 @@
+## [1.5.0-rc.3](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.5.0-rc.2...v1.5.0-rc.3) (2026-03-05)
+
+### 🧹 Chores
+
+* update README ([e0d7860](https://github.com/armandwipangestu/nestjs-boilerplate/commit/e0d78603445c399c8f27315c02544d5ca8a6a2c5))
+
 ## [1.5.0-rc.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.5.0-rc.1...v1.5.0-rc.2) (2026-03-04)
 
 ### ✨ Features
