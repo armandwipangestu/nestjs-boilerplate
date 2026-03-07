@@ -1,3 +1,9 @@
+## [1.6.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.6.0...v1.6.1) (2026-03-07)
+
+### 🧹 Chores
+
+* **deps:** bump actions/upload-artifact from 6 to 7 ([2041d8c](https://github.com/armandwipangestu/nestjs-boilerplate/commit/2041d8c0b6bf8d576730e4807320d3a8eb922560))
+
 ## [1.6.0](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.5.1...v1.6.0) (2026-03-07)
 
 ### ✨ Features
