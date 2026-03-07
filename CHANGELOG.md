@@ -1,3 +1,14 @@
+## [1.6.0](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.5.1...v1.6.0) (2026-03-07)
+
+### ✨ Features
+
+* **logging:** add database query logging in Prisma layer ([0e98ba2](https://github.com/armandwipangestu/nestjs-boilerplate/commit/0e98ba219068e61203885a99a430416717249c39))
+
+### 🧹 Chores
+
+* **release:** 1.5.0-rc.3 [skip ci] ([e9eb8d5](https://github.com/armandwipangestu/nestjs-boilerplate/commit/e9eb8d50989248128616d5415119965211071c25))
+* **release:** 1.6.0-rc.1 [skip ci] ([a6ae0e9](https://github.com/armandwipangestu/nestjs-boilerplate/commit/a6ae0e918e9eb9ee1bff68cd04589376dbf8a575))
+
 ## [1.6.0-rc.1](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.5.0...v1.6.0-rc.1) (2026-03-07)
 
 ### ✨ Features
