@@ -155,9 +155,9 @@ BASE_URL=http://localhost:3000 k6 run observability/k6/load-test.js
 - [x] Export data metrics using Prometheus exporter (Port 9464)
 - [x] Distributed tracing integration using OpenTelemetry
 - [x] Observability setup using OpenTelemetry, Grafana, Loki, Tempo, and Prometheus
-- [x] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
 - [x] Load testing using k6
 - [x] Unit & E2E Tests coverage
+- [] Multi database support (SQLite, PostgreSQL, MySQL, etc.)
 
 ## License
 
