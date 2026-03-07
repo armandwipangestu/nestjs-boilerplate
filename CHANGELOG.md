@@ -1,3 +1,9 @@
+## [1.6.4](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.6.3...v1.6.4) (2026-03-07)
+
+### 🧹 Chores
+
+* **deps-dev:** bump @eslint/eslintrc from 3.3.3 to 3.3.4 ([1a4c75c](https://github.com/armandwipangestu/nestjs-boilerplate/commit/1a4c75c4fb52ddcb28d64afaf382086ef5ab7c80))
+
 ## [1.6.3](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.6.2...v1.6.3) (2026-03-07)
 
 ### 🧹 Chores
