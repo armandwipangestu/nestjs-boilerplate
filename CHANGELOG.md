@@ -1,3 +1,9 @@
+## [1.6.3](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.6.2...v1.6.3) (2026-03-07)
+
+### 🧹 Chores
+
+* **deps-dev:** bump @types/pg from 8.16.0 to 8.18.0 ([970e952](https://github.com/armandwipangestu/nestjs-boilerplate/commit/970e95226e3473941a9964d128546678fdaca8f7))
+
 ## [1.6.2](https://github.com/armandwipangestu/nestjs-boilerplate/compare/v1.6.1...v1.6.2) (2026-03-07)
 
 ### 🧹 Chores
